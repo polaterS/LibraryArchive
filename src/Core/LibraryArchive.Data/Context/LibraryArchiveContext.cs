@@ -17,6 +17,7 @@ namespace LibraryArchive.Data.Context
         public DbSet<Category> Categories { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<NoteShare> NoteShares { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

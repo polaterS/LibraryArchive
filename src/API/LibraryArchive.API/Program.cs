@@ -1,5 +1,9 @@
 using LibraryArchive.Data.Context;
 using Microsoft.EntityFrameworkCore;
+using LibraryArchive.Services.Registration;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using LibraryArchive.Services.Validation.Order;
 
 namespace LibraryArchive.API
 {
@@ -11,13 +15,18 @@ namespace LibraryArchive.API
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<OrderCreateDtoValidator>());
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<LibraryArchiveContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("LibraryArchiveConnection")));
+
+            // Register services and validators
+            builder.Services.AddLibraryArchiveServices();
 
             var app = builder.Build();
 
@@ -31,7 +40,6 @@ namespace LibraryArchive.API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

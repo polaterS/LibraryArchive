@@ -1,0 +1,15 @@
+﻿using FluentValidation;
+using LibraryArchive.Services.DTOs.OrderDetail;
+
+namespace LibraryArchive.Services.Validation.OrderDetail
+{
+    public class OrderDetailUpdateDtoValidator : AbstractValidator<OrderDetailUpdateDto>
+    {
+        public OrderDetailUpdateDtoValidator()
+        {
+            RuleFor(x => x.OrderDetailId).GreaterThan(0).WithMessage("Order Detail ID must be greater than 0.");
+            RuleFor(x => x.Quantity).GreaterThan(0).WithMessage("Quantity must be greater than 0.");
+            RuleFor(x => x.Price).GreaterThan(0).WithMessage("Price must be greater than 0.");
+        }
+    }
+}
