@@ -15,7 +15,6 @@ using LibraryArchive.Services.Validation.Note;
 using LibraryArchive.Services.Validation.NoteShare;
 using LibraryArchive.Services.Validation.Order;
 using LibraryArchive.Services.Validation.OrderDetail;
-using LibraryArchive.Services.Repositories.Concrete;
 using LibraryArchive.Services.Repositories.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using LibraryArchive.Services.Repositories;

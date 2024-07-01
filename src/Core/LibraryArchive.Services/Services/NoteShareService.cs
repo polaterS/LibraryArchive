@@ -1,127 +1,75 @@
-﻿using AutoMapper;
-using FluentValidation;
-using LibraryArchive.Data.Entities;
+﻿using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.NoteShare;
 using LibraryArchive.Services.Repositories.Interfaces;
-using Serilog;
 
 namespace LibraryArchive.Services
 {
     public class NoteShareService
     {
         private readonly INoteShareRepository _noteShareRepository;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
-        private readonly IValidator<NoteShareCreateDto> _noteShareCreateValidator;
-        private readonly IValidator<NoteShareUpdateDto> _noteShareUpdateValidator;
-        private readonly IValidator<NoteShareDeleteDto> _noteShareDeleteValidator;
 
-        public NoteShareService(
-            INoteShareRepository noteShareRepository,
-            IMapper mapper,
-            IValidator<NoteShareCreateDto> noteShareCreateValidator,
-            IValidator<NoteShareUpdateDto> noteShareUpdateValidator,
-            IValidator<NoteShareDeleteDto> noteShareDeleteValidator)
+        public NoteShareService(INoteShareRepository noteShareRepository)
         {
             _noteShareRepository = noteShareRepository;
-            _mapper = mapper;
-            _logger = Log.ForContext<NoteShareService>();
-            _noteShareCreateValidator = noteShareCreateValidator;
-            _noteShareUpdateValidator = noteShareUpdateValidator;
-            _noteShareDeleteValidator = noteShareDeleteValidator;
-        }
-
-        public async Task<NoteShareReadDto> GetNoteShareByIdAsync(int noteShareId)
-        {
-            try
-            {
-                _logger.Information("Getting note share by ID: {NoteShareId}", noteShareId);
-                var noteShare = await _noteShareRepository.GetNoteShareByIdAsync(noteShareId);
-                return _mapper.Map<NoteShareReadDto>(noteShare);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting note share by ID: {NoteShareId}", noteShareId);
-                throw;
-            }
         }
 
         public async Task<IEnumerable<NoteShareReadDto>> GetAllNoteSharesAsync()
         {
-            try
+            var noteShares = await _noteShareRepository.GetAllNoteSharesAsync();
+            return noteShares.Select(ns => new NoteShareReadDto
             {
-                _logger.Information("Getting all note shares");
-                var noteShares = await _noteShareRepository.GetAllNoteSharesAsync();
-                return _mapper.Map<IEnumerable<NoteShareReadDto>>(noteShares);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all note shares");
-                throw;
-            }
+                NoteShareId = ns.NoteShareId,
+                NoteId = ns.NoteId,
+                SharedWithUserId = ns.SharedWithUserId,
+                ShareType = ns.ShareType
+            }).ToList();
         }
 
-        public async Task<IEnumerable<NoteShareReadDto>> GetNoteSharesByUserIdAsync(string userId)
+        public async Task<NoteShareReadDto> GetNoteShareByIdAsync(int noteShareId)
         {
-            try
+            var noteShare = await _noteShareRepository.GetNoteShareByIdAsync(noteShareId);
+            if (noteShare != null)
             {
-                _logger.Information("Getting note shares by user ID: {UserId}", userId);
-                var noteShares = await _noteShareRepository.GetNoteSharesByUserIdAsync(userId);
-                return _mapper.Map<IEnumerable<NoteShareReadDto>>(noteShares);
+                return new NoteShareReadDto
+                {
+                    NoteShareId = noteShare.NoteShareId,
+                    NoteId = noteShare.NoteId,
+                    SharedWithUserId = noteShare.SharedWithUserId,
+                    ShareType = noteShare.ShareType
+                };
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting note shares by user ID: {UserId}", userId);
-                throw;
-            }
+            return null;
         }
 
-        public async Task AddNoteShareAsync(NoteShareCreateDto noteShareCreateDto)
+        public async Task<NoteShare> AddNoteShareAsync(NoteShareCreateDto noteShareDto)
         {
-            await _noteShareCreateValidator.ValidateAndThrowAsync(noteShareCreateDto);
-            try
+            var noteShare = new NoteShare
             {
-                var noteShare = _mapper.Map<NoteShare>(noteShareCreateDto);
-                _logger.Information("Adding note share: {NoteShare}", noteShare);
-                await _noteShareRepository.AddNoteShareAsync(noteShare);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error adding note share: {NoteShareCreateDto}", noteShareCreateDto);
-                throw;
-            }
+                NoteId = noteShareDto.NoteId,
+                SharedWithUserId = noteShareDto.SharedWithUserId,
+                ShareType = noteShareDto.ShareType
+            };
+
+            return await _noteShareRepository.AddNoteShareAsync(noteShare);
         }
 
-        public void RemoveNoteShare(NoteShareDeleteDto noteShareDeleteDto)
+        public async Task<NoteShare> UpdateNoteShareAsync(NoteShareUpdateDto noteShareDto)
         {
-            _noteShareDeleteValidator.ValidateAndThrow(noteShareDeleteDto);
-            try
+            var noteShare = await _noteShareRepository.GetNoteShareByIdAsync(noteShareDto.NoteShareId);
+            if (noteShare != null)
             {
-                var noteShare = _mapper.Map<NoteShare>(noteShareDeleteDto);
-                _logger.Information("Removing note share: {NoteShare}", noteShare);
-                _noteShareRepository.RemoveNoteShare(noteShare);
+                noteShare.NoteId = noteShareDto.NoteId;
+                noteShare.SharedWithUserId = noteShareDto.SharedWithUserId;
+                noteShare.ShareType = noteShareDto.ShareType;
+
+                return await _noteShareRepository.UpdateNoteShareAsync(noteShare);
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error removing note share: {NoteShareDeleteDto}", noteShareDeleteDto);
-                throw;
-            }
+            return null;
         }
 
-        public void UpdateNoteShare(NoteShareUpdateDto noteShareUpdateDto)
+        public async Task<bool> DeleteNoteShareAsync(int noteShareId)
         {
-            _noteShareUpdateValidator.ValidateAndThrow(noteShareUpdateDto);
-            try
-            {
-                var noteShare = _mapper.Map<NoteShare>(noteShareUpdateDto);
-                _logger.Information("Updating note share: {NoteShare}", noteShare);
-                _noteShareRepository.UpdateNoteShare(noteShare);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating note share: {NoteShareUpdateDto}", noteShareUpdateDto);
-                throw;
-            }
+            return await _noteShareRepository.DeleteNoteShareAsync(noteShareId);
         }
     }
 }

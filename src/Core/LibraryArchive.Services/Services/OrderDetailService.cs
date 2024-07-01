@@ -1,127 +1,80 @@
-﻿using AutoMapper;
-using FluentValidation;
-using LibraryArchive.Data.Entities;
+﻿using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.OrderDetail;
 using LibraryArchive.Services.Repositories.Interfaces;
-using Serilog;
 
 namespace LibraryArchive.Services
 {
     public class OrderDetailService
     {
         private readonly IOrderDetailRepository _orderDetailRepository;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
-        private readonly IValidator<OrderDetailCreateDto> _orderDetailCreateValidator;
-        private readonly IValidator<OrderDetailUpdateDto> _orderDetailUpdateValidator;
-        private readonly IValidator<OrderDetailDeleteDto> _orderDetailDeleteValidator;
 
-        public OrderDetailService(
-            IOrderDetailRepository orderDetailRepository,
-            IMapper mapper,
-            IValidator<OrderDetailCreateDto> orderDetailCreateValidator,
-            IValidator<OrderDetailUpdateDto> orderDetailUpdateValidator,
-            IValidator<OrderDetailDeleteDto> orderDetailDeleteValidator)
+        public OrderDetailService(IOrderDetailRepository orderDetailRepository)
         {
             _orderDetailRepository = orderDetailRepository;
-            _mapper = mapper;
-            _logger = Log.ForContext<OrderDetailService>();
-            _orderDetailCreateValidator = orderDetailCreateValidator;
-            _orderDetailUpdateValidator = orderDetailUpdateValidator;
-            _orderDetailDeleteValidator = orderDetailDeleteValidator;
-        }
-
-        public async Task<OrderDetailReadDto> GetOrderDetailByIdAsync(int orderDetailId)
-        {
-            try
-            {
-                _logger.Information("Getting order detail by ID: {OrderDetailId}", orderDetailId);
-                var orderDetail = await _orderDetailRepository.GetOrderDetailByIdAsync(orderDetailId);
-                return _mapper.Map<OrderDetailReadDto>(orderDetail);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting order detail by ID: {OrderDetailId}", orderDetailId);
-                throw;
-            }
         }
 
         public async Task<IEnumerable<OrderDetailReadDto>> GetAllOrderDetailsAsync()
         {
-            try
+            var orderDetails = await _orderDetailRepository.GetAllOrderDetailsAsync();
+            return orderDetails.Select(od => new OrderDetailReadDto
             {
-                _logger.Information("Getting all order details");
-                var orderDetails = await _orderDetailRepository.GetAllOrderDetailsAsync();
-                return _mapper.Map<IEnumerable<OrderDetailReadDto>>(orderDetails);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all order details");
-                throw;
-            }
+                OrderDetailId = od.OrderDetailId,
+                BookId = od.BookId,
+                BookTitle = od.Book.Title, // Assuming Book is loaded
+                Quantity = od.Quantity,
+                Price = od.Price
+            }).ToList();
         }
 
-        public async Task<IEnumerable<OrderDetailReadDto>> GetOrderDetailsByOrderIdAsync(int orderId)
+        public async Task<OrderDetailReadDto> GetOrderDetailByIdAsync(int orderDetailId)
         {
-            try
+            var orderDetail = await _orderDetailRepository.GetOrderDetailByIdAsync(orderDetailId);
+            if (orderDetail != null)
             {
-                _logger.Information("Getting order details by order ID: {OrderId}", orderId);
-                var orderDetails = await _orderDetailRepository.GetOrderDetailsByOrderIdAsync(orderId);
-                return _mapper.Map<IEnumerable<OrderDetailReadDto>>(orderDetails);
+                return new OrderDetailReadDto
+                {
+                    OrderDetailId = orderDetail.OrderDetailId,
+                    BookId = orderDetail.BookId,
+                    BookTitle = orderDetail.Book.Title, // Assuming Book is loaded
+                    Quantity = orderDetail.Quantity,
+                    Price = orderDetail.Price
+                };
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting order details by order ID: {OrderId}", orderId);
-                throw;
-            }
+            return null;
         }
 
-        public async Task AddOrderDetailAsync(OrderDetailCreateDto orderDetailCreateDto)
+
+
+        public async Task<OrderDetail> AddOrderDetailAsync(OrderDetailCreateDto orderDetailDto)
         {
-            await _orderDetailCreateValidator.ValidateAndThrowAsync(orderDetailCreateDto);
-            try
+            var orderDetail = new OrderDetail
             {
-                var orderDetail = _mapper.Map<OrderDetail>(orderDetailCreateDto);
-                _logger.Information("Adding order detail: {OrderDetail}", orderDetail);
-                await _orderDetailRepository.AddOrderDetailAsync(orderDetail);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error adding order detail: {OrderDetailCreateDto}", orderDetailCreateDto);
-                throw;
-            }
+                OrderId = orderDetailDto.OrderId,
+                BookId = orderDetailDto.BookId,
+                Quantity = orderDetailDto.Quantity,
+                Price = orderDetailDto.Price
+            };
+
+            return await _orderDetailRepository.AddOrderDetailAsync(orderDetail);
         }
 
-        public void RemoveOrderDetail(OrderDetailDeleteDto orderDetailDeleteDto)
+        public async Task<OrderDetail> UpdateOrderDetailAsync(OrderDetailUpdateDto orderDetailDto)
         {
-            _orderDetailDeleteValidator.ValidateAndThrow(orderDetailDeleteDto);
-            try
+            var orderDetail = await _orderDetailRepository.GetOrderDetailByIdAsync(orderDetailDto.OrderDetailId);
+            if (orderDetail != null)
             {
-                var orderDetail = _mapper.Map<OrderDetail>(orderDetailDeleteDto);
-                _logger.Information("Removing order detail: {OrderDetail}", orderDetail);
-                _orderDetailRepository.RemoveOrderDetail(orderDetail);
+                orderDetail.BookId = orderDetailDto.BookId;
+                orderDetail.Quantity = orderDetailDto.Quantity;
+                orderDetail.Price = orderDetailDto.Price;
+
+                return await _orderDetailRepository.UpdateOrderDetailAsync(orderDetail);
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error removing order detail: {OrderDetailDeleteDto}", orderDetailDeleteDto);
-                throw;
-            }
+            return null;
         }
 
-        public void UpdateOrderDetail(OrderDetailUpdateDto orderDetailUpdateDto)
+        public async Task<bool> DeleteOrderDetailAsync(int orderDetailId)
         {
-            _orderDetailUpdateValidator.ValidateAndThrow(orderDetailUpdateDto);
-            try
-            {
-                var orderDetail = _mapper.Map<OrderDetail>(orderDetailUpdateDto);
-                _logger.Information("Updating order detail: {OrderDetail}", orderDetail);
-                _orderDetailRepository.UpdateOrderDetail(orderDetail);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating order detail: {OrderDetailUpdateDto}", orderDetailUpdateDto);
-                throw;
-            }
+            return await _orderDetailRepository.DeleteOrderDetailAsync(orderDetailId);
         }
     }
 }

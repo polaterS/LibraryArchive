@@ -1,127 +1,103 @@
-﻿using AutoMapper;
-using FluentValidation;
-using LibraryArchive.Data.Entities;
+﻿using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.Order;
+using LibraryArchive.Services.DTOs.OrderDetail;
 using LibraryArchive.Services.Repositories.Interfaces;
-using Serilog;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace LibraryArchive.Services
 {
     public class OrderService
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
-        private readonly IValidator<OrderCreateDto> _orderCreateValidator;
-        private readonly IValidator<OrderUpdateDto> _orderUpdateValidator;
-        private readonly IValidator<OrderDeleteDto> _orderDeleteValidator;
 
-        public OrderService(
-            IOrderRepository orderRepository,
-            IMapper mapper,
-            IValidator<OrderCreateDto> orderCreateValidator,
-            IValidator<OrderUpdateDto> orderUpdateValidator,
-            IValidator<OrderDeleteDto> orderDeleteValidator)
+        public OrderService(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
-            _mapper = mapper;
-            _logger = Log.ForContext<OrderService>();
-            _orderCreateValidator = orderCreateValidator;
-            _orderUpdateValidator = orderUpdateValidator;
-            _orderDeleteValidator = orderDeleteValidator;
-        }
-
-        public async Task<OrderReadDto> GetOrderByIdAsync(int orderId)
-        {
-            try
-            {
-                _logger.Information("Getting order by ID: {OrderId}", orderId);
-                var order = await _orderRepository.GetOrderByIdAsync(orderId);
-                return _mapper.Map<OrderReadDto>(order);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting order by ID: {OrderId}", orderId);
-                throw;
-            }
         }
 
         public async Task<IEnumerable<OrderReadDto>> GetAllOrdersAsync()
         {
-            try
+            var orders = await _orderRepository.GetAllOrdersAsync();
+            return orders.Select(o => new OrderReadDto
             {
-                _logger.Information("Getting all orders");
-                var orders = await _orderRepository.GetAllOrdersAsync();
-                return _mapper.Map<IEnumerable<OrderReadDto>>(orders);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all orders");
-                throw;
-            }
+                OrderId = o.OrderId,
+                OrderDate = o.OrderDate,
+                UserName = o.User.UserName, // Assuming User is included and loaded
+                OrderDetails = o.OrderDetails.Select(od => new OrderDetailReadDto
+                {
+                    OrderDetailId = od.OrderDetailId,
+                    BookId = od.BookId,
+                    BookTitle = od.Book.Title, // Assuming Book is loaded
+                    Quantity = od.Quantity,
+                    Price = od.Price
+                }).ToList()
+            }).ToList();
         }
 
-        public async Task<IEnumerable<OrderReadDto>> GetOrdersByUserIdAsync(string userId)
+        public async Task<OrderReadDto> GetOrderByIdAsync(int orderId)
         {
-            try
+            var order = await _orderRepository.GetOrderByIdAsync(orderId);
+            if (order != null)
             {
-                _logger.Information("Getting orders by user ID: {UserId}", userId);
-                var orders = await _orderRepository.GetOrdersByUserIdAsync(userId);
-                return _mapper.Map<IEnumerable<OrderReadDto>>(orders);
+                return new OrderReadDto
+                {
+                    OrderId = order.OrderId,
+                    OrderDate = order.OrderDate,
+                    UserName = order.User.UserName, // Assuming User is included
+                    OrderDetails = order.OrderDetails.Select(od => new OrderDetailReadDto
+                    {
+                        OrderDetailId = od.OrderDetailId,
+                        BookId = od.BookId,
+                        BookTitle = od.Book.Title, // Assuming Book is loaded
+                        Quantity = od.Quantity,
+                        Price = od.Price
+                    }).ToList()
+                };
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting orders by user ID: {UserId}", userId);
-                throw;
-            }
+            return null;
         }
 
-        public async Task AddOrderAsync(OrderCreateDto orderCreateDto)
+        public async Task<Order> AddOrderAsync(OrderCreateDto orderDto)
         {
-            await _orderCreateValidator.ValidateAndThrowAsync(orderCreateDto);
-            try
+            var order = new Order
             {
-                var order = _mapper.Map<Order>(orderCreateDto);
-                _logger.Information("Adding order: {Order}", order);
-                await _orderRepository.AddOrderAsync(order);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error adding order: {OrderCreateDto}", orderCreateDto);
-                throw;
-            }
+                UserId = orderDto.UserId, // Assuming UserId is part of OrderCreateDto
+                OrderDate = System.DateTime.Now, // Set order date to current time
+                OrderDetails = orderDto.OrderDetails.Select(od => new OrderDetail
+                {
+                    BookId = od.BookId,
+                    Quantity = od.Quantity,
+                    Price = od.Price
+                }).ToList()
+            };
+
+            return await _orderRepository.AddOrderAsync(order);
         }
 
-        public void RemoveOrder(OrderDeleteDto orderDeleteDto)
+        public async Task<Order> UpdateOrderAsync(OrderUpdateDto orderDto)
         {
-            _orderDeleteValidator.ValidateAndThrow(orderDeleteDto);
-            try
+            var order = await _orderRepository.GetOrderByIdAsync(orderDto.OrderId);
+            if (order != null)
             {
-                var order = _mapper.Map<Order>(orderDeleteDto);
-                _logger.Information("Removing order: {Order}", order);
-                _orderRepository.RemoveOrder(order);
+                // Assuming that updating order might only change its details
+                order.OrderDetails = orderDto.OrderDetails.Select(od => new OrderDetail
+                {
+                    OrderDetailId = od.OrderDetailId,
+                    BookId = od.BookId,
+                    Quantity = od.Quantity,
+                    Price = od.Price
+                }).ToList();
+
+                return await _orderRepository.UpdateOrderAsync(order);
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error removing order: {OrderDeleteDto}", orderDeleteDto);
-                throw;
-            }
+            return null;
         }
 
-        public void UpdateOrder(OrderUpdateDto orderUpdateDto)
+        public async Task<bool> DeleteOrderAsync(int orderId)
         {
-            _orderUpdateValidator.ValidateAndThrow(orderUpdateDto);
-            try
-            {
-                var order = _mapper.Map<Order>(orderUpdateDto);
-                _logger.Information("Updating order: {Order}", order);
-                _orderRepository.UpdateOrder(order);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating order: {OrderUpdateDto}", orderUpdateDto);
-                throw;
-            }
+            return await _orderRepository.DeleteOrderAsync(orderId);
         }
     }
 }

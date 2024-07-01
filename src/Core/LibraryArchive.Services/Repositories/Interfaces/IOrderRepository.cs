@@ -6,11 +6,10 @@ namespace LibraryArchive.Services.Repositories.Interfaces
 {
     public interface IOrderRepository
     {
-        Task<Order> GetOrderByIdAsync(int orderId);
         Task<IEnumerable<Order>> GetAllOrdersAsync();
-        Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId);
-        Task AddOrderAsync(Order order);
-        void RemoveOrder(Order order);
-        void UpdateOrder(Order order);
+        Task<Order> GetOrderByIdAsync(int orderId);
+        Task<Order> AddOrderAsync(Order order);
+        Task<Order> UpdateOrderAsync(Order order);
+        Task<bool> DeleteOrderAsync(int orderId);
     }
 }
