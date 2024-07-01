@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using LibraryArchive.Services.DTOs.User;
+using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.Book;
 using LibraryArchive.Services.DTOs.BookShare;
 using LibraryArchive.Services.DTOs.Category;
@@ -7,7 +7,10 @@ using LibraryArchive.Services.DTOs.Note;
 using LibraryArchive.Services.DTOs.NoteShare;
 using LibraryArchive.Services.DTOs.Order;
 using LibraryArchive.Services.DTOs.OrderDetail;
-using LibraryArchive.Services.Validation.User;
+using LibraryArchive.Services.DTOs.User;
+using LibraryArchive.Services.Repositories;
+using LibraryArchive.Services.Repositories.Interfaces;
+using LibraryArchive.Services.Units;
 using LibraryArchive.Services.Validation.Book;
 using LibraryArchive.Services.Validation.BookShare;
 using LibraryArchive.Services.Validation.Category;
@@ -15,11 +18,9 @@ using LibraryArchive.Services.Validation.Note;
 using LibraryArchive.Services.Validation.NoteShare;
 using LibraryArchive.Services.Validation.Order;
 using LibraryArchive.Services.Validation.OrderDetail;
-using LibraryArchive.Services.Repositories.Interfaces;
+using LibraryArchive.Services.Validation.User;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using LibraryArchive.Services.Repositories;
-using LibraryArchive.Services.Services;
-using LibraryArchive.Services.Units;
 
 namespace LibraryArchive.Services.Registration
 {
@@ -72,6 +73,7 @@ namespace LibraryArchive.Services.Registration
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 
             // Add UserService to the service collection
+            services.AddScoped<UserManager<ApplicationUser>>();
             services.AddScoped<UserService>();
             services.AddScoped<AuthService>();
             services.AddScoped<BookService>();

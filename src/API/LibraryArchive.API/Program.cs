@@ -1,13 +1,20 @@
 using FluentValidation.AspNetCore;
 using LibraryArchive.Data.Context;
 using LibraryArchive.Data.Entities;
-using LibraryArchive.Services;
 using LibraryArchive.Services.Mapping;
 using LibraryArchive.Services.Registration;
-using LibraryArchive.Services.Services;
 using LibraryArchive.Services.Validation.Order;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Sinks.MSSqlServer;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Text;
 
 namespace LibraryArchive.API
 {
@@ -17,29 +24,111 @@ namespace LibraryArchive.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Configure Logging
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File("logs/log.txt")
+                .WriteTo.MSSqlServer(builder.Configuration.GetConnectionString("LibraryArchiveConnection"),
+                                     sinkOptions: new Serilog.Sinks.MSSqlServer.MSSqlServerSinkOptions
+                                     {
+                                         TableName = "logs",
+                                         AutoCreateSqlTable = true
+                                     },
+                                     columnOptions: new ColumnOptions
+                                     {
+                                         AdditionalColumns = new Collection<SqlColumn>
+                                         {
+                                            new SqlColumn("UserName", SqlDbType.NVarChar)
+                                         }
+                                     })
+                .Enrich.FromLogContext()
+                .MinimumLevel.Information()
+                .CreateLogger();
 
+            builder.Host.UseSerilog();
+
+            builder.Services.AddHttpLogging(logging =>
+            {
+                logging.LoggingFields = HttpLoggingFields.All;
+                logging.RequestHeaders.Add("sec-ch-ua");
+                logging.MediaTypeOptions.AddText("application/javascript");
+                logging.RequestBodyLogLimit = 4096;
+                logging.ResponseBodyLogLimit = 4096;
+            });
+
+
+
+            // Add services to the container.
             builder.Services.AddControllers()
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<OrderCreateDtoValidator>());
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            // Configure Swagger/OpenAPI
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "LibraryArchive API", Version = "v1" });
 
+                // JWT authorization configuration for Swagger
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    Name = "JWT Authentication",
+                    Description = "Enter JWT token",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                };
+
+                c.AddSecurityDefinition("Bearer", securityScheme);
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { securityScheme, new[] { "Bearer" } }
+                });
+            });
+
+            // Configure DbContext
             builder.Services.AddDbContext<LibraryArchiveContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("LibraryArchiveConnection")));
 
-            // Register Identity services
+            // Configure Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<LibraryArchiveContext>()
                 .AddDefaultTokenProviders();
 
-            // Register AutoMapper
+            // Configure JWT Authentication
+            var jwtSettings = builder.Configuration.GetSection("Jwt");
+            var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidAudience = jwtSettings["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                };
+            });
+
+
+            // Configure AutoMapper
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             // Register services and validators
             builder.Services.AddLibraryArchiveServices();
-
 
             var app = builder.Build();
 
@@ -51,6 +140,8 @@ namespace LibraryArchive.API
             }
 
             app.UseHttpsRedirection();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

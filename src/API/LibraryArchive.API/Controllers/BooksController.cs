@@ -1,18 +1,25 @@
-﻿using LibraryArchive.Services;
+﻿using LibraryArchive.Data.Entities;
+using LibraryArchive.Services;
 using LibraryArchive.Services.DTOs.Book;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LibraryArchive.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
         private readonly BookService _bookService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public BooksController(BookService bookService)
+        public BooksController(BookService bookService, UserManager<ApplicationUser> userManager)
         {
             _bookService = bookService;
+            _userManager = userManager;
         }
 
         // GET: api/Books
@@ -39,9 +46,24 @@ namespace LibraryArchive.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddBook([FromBody] BookCreateDto bookDto)
         {
-            var book = await _bookService.AddBookAsync(bookDto);
-            return CreatedAtAction(nameof(GetBookById), new { id = book.BookId }, book);
+            try
+            {
+                // Giriş yapmış kullanıcının kimliğini al
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                if (user == null)
+                {
+                    return Unauthorized("Invalid user.");
+                }
+
+                var createdBook = await _bookService.AddBookAsync(bookDto, user.Id);
+                return Ok(createdBook);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
 
         // PUT: api/Books/{id}
         [HttpPut("{id}")]

@@ -34,7 +34,6 @@ namespace LibraryArchive.Services.Repositories
             await _context.SaveChangesAsync();
             return book;
         }
-
         public async Task<Book> UpdateBookAsync(Book book)
         {
             _context.Books.Update(book);

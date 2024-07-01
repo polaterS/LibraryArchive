@@ -4,6 +4,7 @@ using LibraryArchive.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryArchive.Data.Migrations
 {
     [DbContext(typeof(LibraryArchiveContext))]
-    partial class LibraryArchiveContextModelSnapshot : ModelSnapshot
+    [Migration("20240701091041_AddIsActiveToApplicationUser")]
+    partial class AddIsActiveToApplicationUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,7 +140,7 @@ namespace LibraryArchive.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Books", (string)null);
+                    b.ToTable("Books");
                 });
 
             modelBuilder.Entity("LibraryArchive.Data.Entities.BookShare", b =>
@@ -165,7 +168,7 @@ namespace LibraryArchive.Data.Migrations
 
                     b.HasIndex("SharedWithUserId");
 
-                    b.ToTable("BookShares", (string)null);
+                    b.ToTable("BookShares");
                 });
 
             modelBuilder.Entity("LibraryArchive.Data.Entities.Category", b =>
@@ -182,7 +185,7 @@ namespace LibraryArchive.Data.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("LibraryArchive.Data.Entities.Note", b =>
@@ -213,7 +216,7 @@ namespace LibraryArchive.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notes", (string)null);
+                    b.ToTable("Notes");
                 });
 
             modelBuilder.Entity("LibraryArchive.Data.Entities.NoteShare", b =>
@@ -241,7 +244,7 @@ namespace LibraryArchive.Data.Migrations
 
                     b.HasIndex("SharedWithUserId");
 
-                    b.ToTable("NoteShares", (string)null);
+                    b.ToTable("NoteShares");
                 });
 
             modelBuilder.Entity("LibraryArchive.Data.Entities.Order", b =>
@@ -263,7 +266,7 @@ namespace LibraryArchive.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("LibraryArchive.Data.Entities.OrderDetail", b =>
@@ -292,7 +295,7 @@ namespace LibraryArchive.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderDetails", (string)null);
+                    b.ToTable("OrderDetails");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

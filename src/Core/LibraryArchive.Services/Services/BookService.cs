@@ -1,16 +1,22 @@
-﻿using LibraryArchive.Data.Entities;
+﻿using AutoMapper;
+using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.Book;
 using LibraryArchive.Services.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace LibraryArchive.Services
 {
     public class BookService
     {
         private readonly IBookRepository _bookRepository;
+        private readonly IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public BookService(IBookRepository bookRepository)
+        public BookService(IBookRepository bookRepository, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             _bookRepository = bookRepository;
+            _mapper = mapper;
+            _userManager = userManager;
         }
 
         public async Task<IEnumerable<BookReadDto>> GetAllBooksAsync()
@@ -54,20 +60,22 @@ namespace LibraryArchive.Services
             return null;
         }
 
-        public async Task<Book> AddBookAsync(BookCreateDto bookDto)
+        public async Task<BookReadDto> AddBookAsync(BookCreateDto bookDto, string userId)
         {
-            var book = new Book
+            // Kullanıcı kimliğinin geçerli olup olmadığını kontrol et
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                Title = bookDto.Title,
-                Author = bookDto.Author,
-                ISBN = bookDto.ISBN,
-                CoverImageUrl = bookDto.CoverImageUrl,
-                ShelfLocation = bookDto.ShelfLocation,
-                CategoryId = bookDto.CategoryId
-            };
+                throw new Exception("Invalid user ID");
+            }
 
-            return await _bookRepository.AddBookAsync(book);
+            var book = _mapper.Map<Book>(bookDto);
+            book.UserId = userId; // Kullanıcı kimliğini ayarla
+
+            await _bookRepository.AddBookAsync(book);
+            return _mapper.Map<BookReadDto>(book);
         }
+
 
         public async Task<Book> UpdateBookAsync(BookUpdateDto bookDto)
         {

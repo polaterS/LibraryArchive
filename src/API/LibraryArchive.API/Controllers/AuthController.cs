@@ -1,121 +1,84 @@
-﻿using LibraryArchive.Data.Entities;
+﻿using LibraryArchive.Services;
 using LibraryArchive.Services.DTOs.Auth.Login;
 using LibraryArchive.Services.DTOs.Auth.Register;
 using LibraryArchive.Services.DTOs.Auth.Role;
-using LibraryArchive.Services.Services;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace LibraryArchive.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IConfiguration _configuration;
         private readonly AuthService _authService;
 
-        public AuthController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            IConfiguration configuration,
-            AuthService authService)
+        public AuthController(AuthService authService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _configuration = configuration;
             _authService = authService;
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto model)
+        // POST: api/Auth/Register
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            var user = new ApplicationUser
+            try
             {
-                UserName = model.Email,
-                Email = model.Email,
-                Name = model.Name,
-                Surname = model.Surname
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (result.Succeeded)
-            {
-                return Ok(new { result = "Kullanıcı başarıyla oluşturuldu." });
+                var token = await _authService.RegisterAsync(registerDto);
+                return Ok(new { Token = token });
             }
-
-            return BadRequest(result.Errors);
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto model)
+        // POST: api/Auth/Login
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-
-            if (result.Succeeded)
+            try
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                var token = GenerateJwtToken(user);
-
-                return Ok(new { token });
+                var token = await _authService.LoginAsync(loginDto);
+                return Ok(new { Token = token });
             }
-
-            return Unauthorized();
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpPost("createrole")]
-        public async Task<IActionResult> CreateRole([FromBody] RoleDto model)
+        // POST: api/Auth/AssignRole
+        [Authorize(Roles = "Admin")]
+        [HttpPost("AssignRole")]
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto assignRoleDto)
         {
-            var result = await _authService.CreateRoleAsync(model.RoleName);
-
-            if (result.Succeeded)
+            try
             {
-                return Ok(new { result = $"'{model.RoleName}' Rolu başarıyla oluşturuldu." });
+                await _authService.AssignRoleAsync(assignRoleDto);
+                return Ok("Role assigned successfully");
             }
-
-            return BadRequest(result.Errors);
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpPost("assignrole")]
-        public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto model)
+        // POST: api/Auth/CreateRole
+        [Authorize(Roles = "Admin")]
+        [HttpPost("CreateRole")]
+        public async Task<IActionResult> CreateRole([FromBody] RoleDto roleDto)
         {
-            var result = await _authService.AssignRoleAsync(model.Email, model.RoleName);
-
-            if (result.Succeeded)
+            try
             {
-                return Ok(new { result = $"'{model.RoleName}' Rolu '{model.Email}' kullanıcısına başarıyla atandı." });
+                await _authService.CreateRoleAsync(roleDto);
+                return Ok("Role created successfully");
             }
-
-            return BadRequest(result.Errors);
-        }
-
-        private string GenerateJwtToken(ApplicationUser user)
-        {
-            var claims = new[]
+            catch (System.Exception ex)
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddDays(7),
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
