@@ -1,4 +1,5 @@
 using FluentValidation.AspNetCore;
+using LibraryArchive.API.Middleware;
 using LibraryArchive.Data.Context;
 using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.Mapping;
@@ -14,6 +15,7 @@ using Serilog;
 using Serilog.Sinks.MSSqlServer;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Net;
 using System.Reflection;
 using System.Text;
 
@@ -56,8 +58,6 @@ namespace LibraryArchive.API
                 logging.RequestBodyLogLimit = 4096;
                 logging.ResponseBodyLogLimit = 4096;
             });
-
-
 
             // Add services to the container.
             builder.Services.AddControllers()
@@ -140,7 +140,6 @@ namespace LibraryArchive.API
                 };
             });
 
-
             // Configure AutoMapper
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -162,9 +161,54 @@ namespace LibraryArchive.API
 
             app.UseAuthorization();
 
+            // Global exception handling middleware
+            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+            app.UseMiddleware<UserContextMiddleware>();
+
             app.MapControllers();
 
             app.Run();
+        }
+    }
+
+    // Global exception handling middleware
+    public class GlobalExceptionHandlingMiddleware
+    {
+        private readonly RequestDelegate _next;
+        private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
+
+        public GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlingMiddleware> logger)
+        {
+            _next = next;
+            _logger = logger;
+        }
+
+        public async Task InvokeAsync(HttpContext httpContext)
+        {
+            try
+            {
+                await _next(httpContext);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unhandled exception has occurred.");
+                await HandleExceptionAsync(httpContext, ex);
+            }
+        }
+
+        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+            var response = new
+            {
+                StatusCode = context.Response.StatusCode,
+                Message = "Internal Server Error. Please try again later.",
+                Detailed = exception.Message
+            };
+
+            return context.Response.WriteAsJsonAsync(response);
         }
     }
 }

@@ -26,14 +26,14 @@ namespace LibraryArchive.API.Controllers
         /// <response code="200">Kayıtlı kullanıcı için JWT token döndürür</response>
         /// <response code="400">Kayıt ayrıntıları yanlışsa</response>
         [HttpPost("Register")]
-        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             try
             {
                 var token = await _authService.RegisterAsync(registerDto);
-                return Ok(new { Token = token });
+                return Ok(new TokenResponse { Token = token });
             }
             catch (System.Exception ex)
             {
@@ -49,14 +49,14 @@ namespace LibraryArchive.API.Controllers
         /// <response code="200">JWT token döndürür</response>
         /// <response code="400">Giriş bilgileri yanlışsa</response>
         [HttpPost("Login")]
-        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             try
             {
                 var token = await _authService.LoginAsync(loginDto);
-                return Ok(new { Token = token });
+                return Ok(new TokenResponse { Token = token });
             }
             catch (System.Exception ex)
             {
@@ -115,5 +115,10 @@ namespace LibraryArchive.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+    }
+
+    public class TokenResponse
+    {
+        public string Token { get; set; }
     }
 }

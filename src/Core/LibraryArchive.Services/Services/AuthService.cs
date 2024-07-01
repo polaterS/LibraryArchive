@@ -30,7 +30,7 @@ namespace LibraryArchive.Services
             _configuration = configuration;
         }
 
-        public async Task<string> RegisterAsync(RegisterDto registerDto)
+        public virtual async Task<string> RegisterAsync(RegisterDto registerDto)
         {
             var user = new ApplicationUser
             {
@@ -50,7 +50,7 @@ namespace LibraryArchive.Services
             return await GenerateJwtToken(user);
         }
 
-        public async Task<string> LoginAsync(LoginDto loginDto)
+        public virtual async Task<string> LoginAsync(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user == null)
@@ -68,7 +68,7 @@ namespace LibraryArchive.Services
             return await GenerateJwtToken(user);
         }
 
-        public async Task AssignRoleAsync(AssignRoleDto assignRoleDto)
+        public virtual async Task AssignRoleAsync(AssignRoleDto assignRoleDto)
         {
             var user = await _userManager.FindByEmailAsync(assignRoleDto.Email);
             if (user == null)
@@ -88,8 +88,7 @@ namespace LibraryArchive.Services
             }
         }
 
-
-        public async Task CreateRoleAsync(RoleDto roleDto)
+        public virtual async Task CreateRoleAsync(RoleDto roleDto)
         {
             if (await _roleManager.RoleExistsAsync(roleDto.RoleName))
             {
@@ -109,12 +108,12 @@ namespace LibraryArchive.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
 
             var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName)
-            };
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Name, user.UserName)
+        };
 
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
@@ -131,6 +130,6 @@ namespace LibraryArchive.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
     }
+
 }
