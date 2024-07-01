@@ -1,4 +1,5 @@
-﻿using LibraryArchive.Data.Entities;
+﻿using AutoMapper;
+using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.BookShare;
 using LibraryArchive.Services.Repositories.Interfaces;
 
@@ -7,69 +8,41 @@ namespace LibraryArchive.Services
     public class BookShareService
     {
         private readonly IBookShareRepository _bookShareRepository;
+        private readonly IMapper _mapper;
 
-        public BookShareService(IBookShareRepository bookShareRepository)
+        public BookShareService(IBookShareRepository bookShareRepository, IMapper mapper)
         {
             _bookShareRepository = bookShareRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<BookShareReadDto>> GetAllBookSharesAsync()
         {
             var bookShares = await _bookShareRepository.GetAllBookSharesAsync();
-            var bookShareDtos = new List<BookShareReadDto>();
-
-            foreach (var bookShare in bookShares)
-            {
-                bookShareDtos.Add(new BookShareReadDto
-                {
-                    BookShareId = bookShare.BookShareId,
-                    NoteId = bookShare.NoteId,
-                    SharedWithUserId = bookShare.SharedWithUserId,
-                    ShareType = bookShare.ShareType
-                });
-            }
-
-            return bookShareDtos;
+            return _mapper.Map<IEnumerable<BookShareReadDto>>(bookShares);
         }
 
         public async Task<BookShareReadDto> GetBookShareByIdAsync(int bookShareId)
         {
             var bookShare = await _bookShareRepository.GetBookShareByIdAsync(bookShareId);
-            if (bookShare != null)
-            {
-                return new BookShareReadDto
-                {
-                    BookShareId = bookShare.BookShareId,
-                    NoteId = bookShare.NoteId,
-                    SharedWithUserId = bookShare.SharedWithUserId,
-                    ShareType = bookShare.ShareType
-                };
-            }
-            return null;
+            return bookShare != null ? _mapper.Map<BookShareReadDto>(bookShare) : null;
         }
 
-        public async Task<BookShare> AddBookShareAsync(BookShareCreateDto bookShareDto)
+        public async Task<BookShareReadDto> AddBookShareAsync(BookShareCreateDto bookShareDto)
         {
-            var bookShare = new BookShare
-            {
-                NoteId = bookShareDto.NoteId,
-                SharedWithUserId = bookShareDto.SharedWithUserId,
-                ShareType = bookShareDto.ShareType
-            };
-
-            return await _bookShareRepository.AddBookShareAsync(bookShare);
+            var bookShare = _mapper.Map<BookShare>(bookShareDto);
+            var addedBookShare = await _bookShareRepository.AddBookShareAsync(bookShare);
+            return _mapper.Map<BookShareReadDto>(addedBookShare);
         }
 
-        public async Task<BookShare> UpdateBookShareAsync(BookShareUpdateDto bookShareDto)
+        public async Task<BookShareReadDto> UpdateBookShareAsync(BookShareUpdateDto bookShareDto)
         {
             var bookShare = await _bookShareRepository.GetBookShareByIdAsync(bookShareDto.BookShareId);
             if (bookShare != null)
             {
-                bookShare.NoteId = bookShareDto.NoteId;
-                bookShare.SharedWithUserId = bookShareDto.SharedWithUserId;
-                bookShare.ShareType = bookShareDto.ShareType;
-
-                return await _bookShareRepository.UpdateBookShareAsync(bookShare);
+                _mapper.Map(bookShareDto, bookShare);
+                var updatedBookShare = await _bookShareRepository.UpdateBookShareAsync(bookShare);
+                return _mapper.Map<BookShareReadDto>(updatedBookShare);
             }
             return null;
         }

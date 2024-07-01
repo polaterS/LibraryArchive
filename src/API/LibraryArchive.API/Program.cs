@@ -14,6 +14,7 @@ using Serilog;
 using Serilog.Sinks.MSSqlServer;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Reflection;
 using System.Text;
 
 namespace LibraryArchive.API
@@ -66,7 +67,18 @@ namespace LibraryArchive.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "LibraryArchive API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "LibraryArchive API",
+                    Version = "v1",
+                    Description = "Bu proje, adayýn kütüphane arþiv yönetimi, kullanýcý etkileþimi ve e-ticaret özellikleri için kapsamlý bir arka uç sistemi tasarlama ve uygulama becerisini deðerlendirmek üzere tasarlanmýþtýr.",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Dev",
+                        Email = "dev@gmail.com",
+                        Url = new Uri("https://example.com")
+                    }
+                });
 
                 // JWT authorization configuration for Swagger
                 var securityScheme = new OpenApiSecurityScheme
@@ -89,6 +101,11 @@ namespace LibraryArchive.API
                 {
                     { securityScheme, new[] { "Bearer" } }
                 });
+
+                // XML comments configuration
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
 
             // Configure DbContext

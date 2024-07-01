@@ -15,16 +15,29 @@ namespace LibraryArchive.API.Controllers
             _orderDetailService = orderDetailService;
         }
 
-        // GET: api/OrderDetails
+        /// <summary>
+        /// Tüm sipariş detaylarını alır.
+        /// </summary>
+        /// <returns>Sipariş detaylarının listesi</returns>
+        /// <response code="200">Sipariş detaylarının listesi başarıyla döndürüldü</response>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<OrderDetailReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllOrderDetails()
         {
             var orderDetails = await _orderDetailService.GetAllOrderDetailsAsync();
             return Ok(orderDetails);
         }
 
-        // GET: api/OrderDetails/{id}
+        /// <summary>
+        /// Belirli bir ID'ye sahip sipariş detayını alır.
+        /// </summary>
+        /// <param name="id">Sipariş detayı ID'si</param>
+        /// <returns>Sipariş detayı</returns>
+        /// <response code="200">Sipariş detayı başarıyla döndürüldü</response>
+        /// <response code="404">Sipariş detayı bulunamadı</response>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(OrderDetailReadDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetOrderDetailById(int id)
         {
             var orderDetail = await _orderDetailService.GetOrderDetailByIdAsync(id);
@@ -35,16 +48,35 @@ namespace LibraryArchive.API.Controllers
             return Ok(orderDetail);
         }
 
-        // POST: api/OrderDetails
+        /// <summary>
+        /// Yeni bir sipariş detayı ekler.
+        /// </summary>
+        /// <param name="orderDetailDto">Sipariş detayı detayları</param>
+        /// <returns>Eklenen sipariş detayı</returns>
+        /// <response code="201">Sipariş detayı başarıyla eklendi</response>
+        /// <response code="400">Sipariş detayı detayları yanlışsa</response>
         [HttpPost]
+        [ProducesResponseType(typeof(OrderDetailReadDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddOrderDetail([FromBody] OrderDetailCreateDto orderDetailDto)
         {
             var orderDetail = await _orderDetailService.AddOrderDetailAsync(orderDetailDto);
             return CreatedAtAction(nameof(GetOrderDetailById), new { id = orderDetail.OrderDetailId }, orderDetail);
         }
 
-        // PUT: api/OrderDetails/{id}
+        /// <summary>
+        /// Belirli bir ID'ye sahip sipariş detayını günceller.
+        /// </summary>
+        /// <param name="id">Sipariş detayı ID'si</param>
+        /// <param name="orderDetailDto">Güncellenmiş sipariş detayı detayları</param>
+        /// <returns>NoContent</returns>
+        /// <response code="204">Sipariş detayı başarıyla güncellendi</response>
+        /// <response code="400">Sipariş detayı ID uyumsuzluğu veya detayları yanlışsa</response>
+        /// <response code="404">Sipariş detayı bulunamadı</response>
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateOrderDetail(int id, [FromBody] OrderDetailUpdateDto orderDetailDto)
         {
             if (id != orderDetailDto.OrderDetailId)
@@ -60,8 +92,16 @@ namespace LibraryArchive.API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/OrderDetails/{id}
+        /// <summary>
+        /// Belirli bir ID'ye sahip sipariş detayını siler.
+        /// </summary>
+        /// <param name="id">Sipariş detayı ID'si</param>
+        /// <returns>NoContent</returns>
+        /// <response code="204">Sipariş detayı başarıyla silindi</response>
+        /// <response code="404">Sipariş detayı bulunamadı</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteOrderDetail(int id)
         {
             bool result = await _orderDetailService.DeleteOrderDetailAsync(id);

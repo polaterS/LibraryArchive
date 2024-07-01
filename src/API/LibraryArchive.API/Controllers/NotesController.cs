@@ -1,4 +1,5 @@
-﻿using LibraryArchive.Services;
+﻿using LibraryArchive.Data.Entities;
+using LibraryArchive.Services;
 using LibraryArchive.Services.DTOs.Note;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,16 +16,29 @@ namespace LibraryArchive.API.Controllers
             _noteService = noteService;
         }
 
-        // GET: api/Notes
+        /// <summary>
+        /// Tüm notları alır.
+        /// </summary>
+        /// <returns>Notların listesi</returns>
+        /// <response code="200">Notların listesi başarıyla döndürüldü</response>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<NoteReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllNotes()
         {
             var notes = await _noteService.GetAllNotesAsync();
             return Ok(notes);
         }
 
-        // GET: api/Notes/{id}
+        /// <summary>
+        /// Belirli bir ID'ye sahip notu alır.
+        /// </summary>
+        /// <param name="id">Not ID'si</param>
+        /// <returns>Not detayları</returns>
+        /// <response code="200">Not detayları başarıyla döndürüldü</response>
+        /// <response code="404">Not bulunamadı</response>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(NoteReadDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetNoteById(int id)
         {
             var note = await _noteService.GetNoteByIdAsync(id);
@@ -35,16 +49,35 @@ namespace LibraryArchive.API.Controllers
             return Ok(note);
         }
 
-        // POST: api/Notes
+        /// <summary>
+        /// Yeni bir not ekler.
+        /// </summary>
+        /// <param name="noteDto">Not detayları</param>
+        /// <returns>Eklenen not detayları</returns>
+        /// <response code="201">Not başarıyla eklendi</response>
+        /// <response code="400">Not detayları yanlışsa</response>
         [HttpPost]
+        [ProducesResponseType(typeof(Note), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddNote([FromBody] NoteCreateDto noteDto)
         {
             var note = await _noteService.AddNoteAsync(noteDto);
             return CreatedAtAction(nameof(GetNoteById), new { id = note.NoteId }, note);
         }
 
-        // PUT: api/Notes/{id}
+        /// <summary>
+        /// Belirli bir ID'ye sahip notu günceller.
+        /// </summary>
+        /// <param name="id">Not ID'si</param>
+        /// <param name="noteDto">Güncellenmiş not detayları</param>
+        /// <returns>NoContent</returns>
+        /// <response code="204">Not başarıyla güncellendi</response>
+        /// <response code="400">Not ID uyumsuzluğu veya detayları yanlışsa</response>
+        /// <response code="404">Not bulunamadı</response>
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateNote(int id, [FromBody] NoteUpdateDto noteDto)
         {
             if (id != noteDto.NoteId)
@@ -60,8 +93,16 @@ namespace LibraryArchive.API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Notes/{id}
+        /// <summary>
+        /// Belirli bir ID'ye sahip notu siler.
+        /// </summary>
+        /// <param name="id">Not ID'si</param>
+        /// <returns>NoContent</returns>
+        /// <response code="204">Not başarıyla silindi</response>
+        /// <response code="404">Not bulunamadı</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteNote(int id)
         {
             bool result = await _noteService.DeleteNoteAsync(id);

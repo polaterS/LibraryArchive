@@ -1,4 +1,5 @@
-﻿using LibraryArchive.Data.Entities;
+﻿using AutoMapper;
+using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.Note;
 using LibraryArchive.Services.Repositories.Interfaces;
 
@@ -7,65 +8,41 @@ namespace LibraryArchive.Services
     public class NoteService
     {
         private readonly INoteRepository _noteRepository;
+        private readonly IMapper _mapper;
 
-        public NoteService(INoteRepository noteRepository)
+        public NoteService(INoteRepository noteRepository, IMapper mapper)
         {
             _noteRepository = noteRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<NoteReadDto>> GetAllNotesAsync()
         {
             var notes = await _noteRepository.GetAllNotesAsync();
-            return notes.Select(n => new NoteReadDto
-            {
-                NoteId = n.NoteId,
-                BookId = n.BookId,
-                Content = n.Content,
-                IsPrivate = n.IsPrivate,
-                UserName = n.User.UserName,  // Assuming that the User relation is included
-                BookTitle = n.Book.Title     // Assuming that the Book relation is included
-            }).ToList();
+            return _mapper.Map<IEnumerable<NoteReadDto>>(notes);
         }
 
         public async Task<NoteReadDto> GetNoteByIdAsync(int noteId)
         {
             var note = await _noteRepository.GetNoteByIdAsync(noteId);
-            if (note != null)
-            {
-                return new NoteReadDto
-                {
-                    NoteId = note.NoteId,
-                    BookId = note.BookId,
-                    Content = note.Content,
-                    IsPrivate = note.IsPrivate,
-                    UserName = note.User.UserName,  // Assuming User is loaded
-                    BookTitle = note.Book.Title     // Assuming Book is loaded
-                };
-            }
-            return null;
+            return note != null ? _mapper.Map<NoteReadDto>(note) : null;
         }
 
-        public async Task<Note> AddNoteAsync(NoteCreateDto noteDto)
+        public async Task<NoteReadDto> AddNoteAsync(NoteCreateDto noteDto)
         {
-            var note = new Note
-            {
-                BookId = noteDto.BookId,
-                Content = noteDto.Content,
-                IsPrivate = noteDto.IsPrivate,
-                UserId = noteDto.UserId  // Assuming UserId is part of NoteCreateDto
-            };
-
-            return await _noteRepository.AddNoteAsync(note);
+            var note = _mapper.Map<Note>(noteDto);
+            var addedNote = await _noteRepository.AddNoteAsync(note);
+            return _mapper.Map<NoteReadDto>(addedNote);
         }
 
-        public async Task<Note> UpdateNoteAsync(NoteUpdateDto noteDto)
+        public async Task<NoteReadDto> UpdateNoteAsync(NoteUpdateDto noteDto)
         {
             var note = await _noteRepository.GetNoteByIdAsync(noteDto.NoteId);
             if (note != null)
             {
-                note.Content = noteDto.Content;
-                note.IsPrivate = noteDto.IsPrivate;
-                return await _noteRepository.UpdateNoteAsync(note);
+                _mapper.Map(noteDto, note);
+                var updatedNote = await _noteRepository.UpdateNoteAsync(note);
+                return _mapper.Map<NoteReadDto>(updatedNote);
             }
             return null;
         }

@@ -1,4 +1,5 @@
-﻿using LibraryArchive.Services;
+﻿using LibraryArchive.Data.Entities;
+using LibraryArchive.Services;
 using LibraryArchive.Services.DTOs.BookShare;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,16 +16,29 @@ namespace LibraryArchive.API.Controllers
             _bookShareService = bookShareService;
         }
 
-        // GET: api/BookShares
+        /// <summary>
+        /// Tüm kitap paylaşımlarını alır.
+        /// </summary>
+        /// <returns>Kitap paylaşım listesi</returns>
+        /// <response code="200">Kitap paylaşım listesi başarıyla döndürüldü</response>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<BookShareReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllBookShares()
         {
             var bookShares = await _bookShareService.GetAllBookSharesAsync();
             return Ok(bookShares);
         }
 
-        // GET: api/BookShares/{id}
+        /// <summary>
+        /// Belirli bir ID'ye sahip kitap paylaşımını alır.
+        /// </summary>
+        /// <param name="id">Kitap paylaşım ID'si</param>
+        /// <returns>Kitap paylaşım detayları</returns>
+        /// <response code="200">Kitap paylaşım detayları başarıyla döndürüldü</response>
+        /// <response code="404">Kitap paylaşımı bulunamadı</response>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(BookShareReadDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetBookShareById(int id)
         {
             var bookShare = await _bookShareService.GetBookShareByIdAsync(id);
@@ -35,16 +49,35 @@ namespace LibraryArchive.API.Controllers
             return Ok(bookShare);
         }
 
-        // POST: api/BookShares
+        /// <summary>
+        /// Yeni bir kitap paylaşımı ekler.
+        /// </summary>
+        /// <param name="bookShareDto">Kitap paylaşım detayları</param>
+        /// <returns>Eklenen kitap paylaşımı detayları</returns>
+        /// <response code="201">Kitap paylaşımı başarıyla eklendi</response>
+        /// <response code="400">Kitap paylaşım detayları yanlışsa</response>
         [HttpPost]
+        [ProducesResponseType(typeof(BookShare), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddBookShare([FromBody] BookShareCreateDto bookShareDto)
         {
             var bookShare = await _bookShareService.AddBookShareAsync(bookShareDto);
             return CreatedAtAction(nameof(GetBookShareById), new { id = bookShare.BookShareId }, bookShare);
         }
 
-        // PUT: api/BookShares/{id}
+        /// <summary>
+        /// Belirli bir ID'ye sahip kitap paylaşımını günceller.
+        /// </summary>
+        /// <param name="id">Kitap paylaşım ID'si</param>
+        /// <param name="bookShareDto">Güncellenmiş kitap paylaşım detayları</param>
+        /// <returns>NoContent</returns>
+        /// <response code="204">Kitap paylaşımı başarıyla güncellendi</response>
+        /// <response code="400">Kitap paylaşım ID uyumsuzluğu veya detayları yanlışsa</response>
+        /// <response code="404">Kitap paylaşımı bulunamadı</response>
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateBookShare(int id, [FromBody] BookShareUpdateDto bookShareDto)
         {
             if (id != bookShareDto.BookShareId)
@@ -60,8 +93,16 @@ namespace LibraryArchive.API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/BookShares/{id}
+        /// <summary>
+        /// Belirli bir ID'ye sahip kitap paylaşımını siler.
+        /// </summary>
+        /// <param name="id">Kitap paylaşım ID'si</param>
+        /// <returns>NoContent</returns>
+        /// <response code="204">Kitap paylaşımı başarıyla silindi</response>
+        /// <response code="404">Kitap paylaşımı bulunamadı</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteBookShare(int id)
         {
             bool result = await _bookShareService.DeleteBookShareAsync(id);

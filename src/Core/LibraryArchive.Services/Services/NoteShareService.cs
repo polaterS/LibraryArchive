@@ -1,4 +1,5 @@
-﻿using LibraryArchive.Data.Entities;
+﻿using AutoMapper;
+using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.NoteShare;
 using LibraryArchive.Services.Repositories.Interfaces;
 
@@ -7,62 +8,41 @@ namespace LibraryArchive.Services
     public class NoteShareService
     {
         private readonly INoteShareRepository _noteShareRepository;
+        private readonly IMapper _mapper;
 
-        public NoteShareService(INoteShareRepository noteShareRepository)
+        public NoteShareService(INoteShareRepository noteShareRepository, IMapper mapper)
         {
             _noteShareRepository = noteShareRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<NoteShareReadDto>> GetAllNoteSharesAsync()
         {
             var noteShares = await _noteShareRepository.GetAllNoteSharesAsync();
-            return noteShares.Select(ns => new NoteShareReadDto
-            {
-                NoteShareId = ns.NoteShareId,
-                NoteId = ns.NoteId,
-                SharedWithUserId = ns.SharedWithUserId,
-                ShareType = ns.ShareType
-            }).ToList();
+            return _mapper.Map<IEnumerable<NoteShareReadDto>>(noteShares);
         }
 
         public async Task<NoteShareReadDto> GetNoteShareByIdAsync(int noteShareId)
         {
             var noteShare = await _noteShareRepository.GetNoteShareByIdAsync(noteShareId);
-            if (noteShare != null)
-            {
-                return new NoteShareReadDto
-                {
-                    NoteShareId = noteShare.NoteShareId,
-                    NoteId = noteShare.NoteId,
-                    SharedWithUserId = noteShare.SharedWithUserId,
-                    ShareType = noteShare.ShareType
-                };
-            }
-            return null;
+            return noteShare != null ? _mapper.Map<NoteShareReadDto>(noteShare) : null;
         }
 
-        public async Task<NoteShare> AddNoteShareAsync(NoteShareCreateDto noteShareDto)
+        public async Task<NoteShareReadDto> AddNoteShareAsync(NoteShareCreateDto noteShareDto)
         {
-            var noteShare = new NoteShare
-            {
-                NoteId = noteShareDto.NoteId,
-                SharedWithUserId = noteShareDto.SharedWithUserId,
-                ShareType = noteShareDto.ShareType
-            };
-
-            return await _noteShareRepository.AddNoteShareAsync(noteShare);
+            var noteShare = _mapper.Map<NoteShare>(noteShareDto);
+            var addedNoteShare = await _noteShareRepository.AddNoteShareAsync(noteShare);
+            return _mapper.Map<NoteShareReadDto>(addedNoteShare);
         }
 
-        public async Task<NoteShare> UpdateNoteShareAsync(NoteShareUpdateDto noteShareDto)
+        public async Task<NoteShareReadDto> UpdateNoteShareAsync(NoteShareUpdateDto noteShareDto)
         {
             var noteShare = await _noteShareRepository.GetNoteShareByIdAsync(noteShareDto.NoteShareId);
             if (noteShare != null)
             {
-                noteShare.NoteId = noteShareDto.NoteId;
-                noteShare.SharedWithUserId = noteShareDto.SharedWithUserId;
-                noteShare.ShareType = noteShareDto.ShareType;
-
-                return await _noteShareRepository.UpdateNoteShareAsync(noteShare);
+                _mapper.Map(noteShareDto, noteShare);
+                var updatedNoteShare = await _noteShareRepository.UpdateNoteShareAsync(noteShare);
+                return _mapper.Map<NoteShareReadDto>(updatedNoteShare);
             }
             return null;
         }

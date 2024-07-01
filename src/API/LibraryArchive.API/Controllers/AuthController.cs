@@ -4,7 +4,6 @@ using LibraryArchive.Services.DTOs.Auth.Register;
 using LibraryArchive.Services.DTOs.Auth.Role;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace LibraryArchive.API.Controllers
 {
@@ -19,8 +18,16 @@ namespace LibraryArchive.API.Controllers
             _authService = authService;
         }
 
-        // POST: api/Auth/Register
+        /// <summary>
+        /// Yeni bir kullanıcı kaydeder.
+        /// </summary>
+        /// <param name="registerDto">Kayıt Detayları</param>
+        /// <returns>Kayıtlı kullanıcı için JWT belirteci</returns>
+        /// <response code="200">Kayıtlı kullanıcı için JWT token döndürür</response>
+        /// <response code="400">Kayıt ayrıntıları yanlışsa</response>
         [HttpPost("Register")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             try
@@ -34,8 +41,16 @@ namespace LibraryArchive.API.Controllers
             }
         }
 
-        // POST: api/Auth/Login
+        /// <summary>
+        /// Kullanıcı Girişi.
+        /// </summary>
+        /// <param name="loginDto">Giriş detayları</param>
+        /// <returns>JWT token</returns>
+        /// <response code="200">JWT token döndürür</response>
+        /// <response code="400">Giriş bilgileri yanlışsa</response>
         [HttpPost("Login")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             try
@@ -49,15 +64,25 @@ namespace LibraryArchive.API.Controllers
             }
         }
 
-        // POST: api/Auth/AssignRole
+        /// <summary>
+        /// Bir kullanıcıya bir rol atar.
+        /// </summary>
+        /// <param name="assignRoleDto">Rol atama ayrıntıları</param>
+        /// <returns>Onay mesajı döndürür.</returns>
+        /// <response code="200">Rol başarıyla atandı</response>
+        /// <response code="400">Rol atama ayrıntıları yanlışsa</response>
+        /// <response code="403">Kullanıcı yetkili değilse</response>
         [Authorize(Roles = "Admin")]
         [HttpPost("AssignRole")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto assignRoleDto)
         {
             try
             {
                 await _authService.AssignRoleAsync(assignRoleDto);
-                return Ok("Role assigned successfully");
+                return Ok("Rol başarıyla atandı.");
             }
             catch (System.Exception ex)
             {
@@ -65,15 +90,25 @@ namespace LibraryArchive.API.Controllers
             }
         }
 
-        // POST: api/Auth/CreateRole
+        /// <summary>
+        /// Yeni bir rol oluşturur.
+        /// </summary>
+        /// <param name="roleDto">Rol ayrıntıları</param>
+        /// <returns>Onay mesajı döndürür.</returns>
+        /// <response code="200">Rol başarıyla oluşturuldu</response>
+        /// <response code="400">Rol ayrıntıları yanlışsa</response>
+        /// <response code="403">Kullanıcı yetkili değilse</response>
         [Authorize(Roles = "Admin")]
         [HttpPost("CreateRole")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateRole([FromBody] RoleDto roleDto)
         {
             try
             {
                 await _authService.CreateRoleAsync(roleDto);
-                return Ok("Role created successfully");
+                return Ok("Rol başarıyla oluşturuldu");
             }
             catch (System.Exception ex)
             {

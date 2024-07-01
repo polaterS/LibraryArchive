@@ -4,7 +4,6 @@ using LibraryArchive.Services.DTOs.Book;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace LibraryArchive.API.Controllers
 {
@@ -22,16 +21,29 @@ namespace LibraryArchive.API.Controllers
             _userManager = userManager;
         }
 
-        // GET: api/Books
+        /// <summary>
+        /// Tüm kitapları alır.
+        /// </summary>
+        /// <returns>Kitap listesi</returns>
+        /// <response code="200">Kitap listesi başarıyla döndürüldü</response>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<BookReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllBooks()
         {
             var books = await _bookService.GetAllBooksAsync();
             return Ok(books);
         }
 
-        // GET: api/Books/{id}
+        /// <summary>
+        /// Belirli bir ID'ye sahip kitabı alır.
+        /// </summary>
+        /// <param name="id">Kitap ID'si</param>
+        /// <returns>Kitap detayları</returns>
+        /// <response code="200">Kitap detayları başarıyla döndürüldü</response>
+        /// <response code="404">Kitap bulunamadı</response>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(BookReadDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetBookById(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
@@ -42,13 +54,22 @@ namespace LibraryArchive.API.Controllers
             return Ok(book);
         }
 
-        // POST: api/Books
+        /// <summary>
+        /// Yeni bir kitap ekler.
+        /// </summary>
+        /// <param name="bookDto">Kitap detayları</param>
+        /// <returns>Eklenen kitap detayları</returns>
+        /// <response code="200">Kitap başarıyla eklendi</response>
+        /// <response code="400">Kitap detayları yanlışsa</response>
+        /// <response code="401">Kullanıcı yetkili değilse</response>
         [HttpPost]
+        [ProducesResponseType(typeof(BookReadDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> AddBook([FromBody] BookCreateDto bookDto)
         {
             try
             {
-                // Giriş yapmış kullanıcının kimliğini al
                 var user = await _userManager.FindByNameAsync(User.Identity.Name);
                 if (user == null)
                 {
@@ -64,9 +85,19 @@ namespace LibraryArchive.API.Controllers
             }
         }
 
-
-        // PUT: api/Books/{id}
+        /// <summary>
+        /// Belirli bir ID'ye sahip kitabı günceller.
+        /// </summary>
+        /// <param name="id">Kitap ID'si</param>
+        /// <param name="bookDto">Güncellenmiş kitap detayları</param>
+        /// <returns>NoContent</returns>
+        /// <response code="204">Kitap başarıyla güncellendi</response>
+        /// <response code="400">Kitap ID uyumsuzluğu veya detayları yanlışsa</response>
+        /// <response code="404">Kitap bulunamadı</response>
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateBook(int id, [FromBody] BookUpdateDto bookDto)
         {
             if (id != bookDto.BookId)
@@ -82,8 +113,16 @@ namespace LibraryArchive.API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Books/{id}
+        /// <summary>
+        /// Belirli bir ID'ye sahip kitabı siler.
+        /// </summary>
+        /// <param name="id">Kitap ID'si</param>
+        /// <returns>NoContent</returns>
+        /// <response code="204">Kitap başarıyla silindi</response>
+        /// <response code="404">Kitap bulunamadı</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteBook(int id)
         {
             bool result = await _bookService.DeleteBookAsync(id);
@@ -94,8 +133,14 @@ namespace LibraryArchive.API.Controllers
             return NoContent();
         }
 
-        // GET: api/Books/search?term=searchTerm
+        /// <summary>
+        /// Arama terimine göre kitapları arar.
+        /// </summary>
+        /// <param name="term">Arama terimi</param>
+        /// <returns>Arama sonuçları</returns>
+        /// <response code="200">Arama sonuçları başarıyla döndürüldü</response>
         [HttpGet("search")]
+        [ProducesResponseType(typeof(IEnumerable<BookReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> SearchBooks([FromQuery] string term)
         {
             var books = await _bookService.SearchBooksAsync(term);

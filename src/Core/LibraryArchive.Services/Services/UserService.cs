@@ -1,4 +1,5 @@
-﻿using LibraryArchive.Data.Entities;
+﻿using AutoMapper;
+using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.User;
 using LibraryArchive.Services.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -9,43 +10,39 @@ namespace LibraryArchive.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository, UserManager<ApplicationUser> userManager)
+        public UserService(IUserRepository userRepository, UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             _userRepository = userRepository;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         public async Task<(IdentityResult, ApplicationUser)> RegisterUserAsync(UserCreateDto userDto)
         {
-            var user = new ApplicationUser
-            {
-                UserName = userDto.UserName,
-                Email = userDto.Email,
-                Name = userDto.Name,
-                Surname = userDto.Surname,
-                IsActive = true
-            };
+            var user = _mapper.Map<ApplicationUser>(userDto);
+            user.IsActive = true;
 
             var result = await _userManager.CreateAsync(user, userDto.Password);
             if (result.Succeeded)
             {
-                // Kullanıcı başarıyla oluşturulduktan sonra, UserManager kullanılarak kullanıcıyı tekrar buluyoruz.
                 var createdUser = await _userManager.FindByNameAsync(user.UserName);
                 return (result, createdUser);
             }
             return (result, null);
         }
 
-
-        public async Task<ApplicationUser> GetUserByIdAsync(string id)
+        public async Task<UserReadDto> GetUserByIdAsync(string id)
         {
-            return await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetByIdAsync(id);
+            return _mapper.Map<UserReadDto>(user);
         }
 
-        public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserReadDto>> GetAllUsersAsync()
         {
-            return await _userRepository.GetAllAsync();
+            var users = await _userRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<UserReadDto>>(users);
         }
 
         public async Task<IdentityResult> UpdateUserAsync(UserUpdateDto userDto)
@@ -53,16 +50,12 @@ namespace LibraryArchive.Services
             var user = await _userRepository.GetByIdAsync(userDto.Id);
             if (user != null)
             {
-                user.Email = userDto.Email;
-                user.Name = userDto.Name;
-                user.Surname = userDto.Surname;
-
+                _mapper.Map(userDto, user);
                 var result = await _userManager.UpdateAsync(user);
                 return result;
             }
             return IdentityResult.Failed(new IdentityError { Description = "User not found." });
         }
-
 
         public async Task<IdentityResult> DeleteUserAsync(string id)
         {
@@ -75,14 +68,16 @@ namespace LibraryArchive.Services
             return IdentityResult.Failed(new IdentityError { Description = "User not found." });
         }
 
-        public async Task<IEnumerable<ApplicationUser>> SearchUsersAsync(string searchTerm)
+        public async Task<IEnumerable<UserReadDto>> SearchUsersAsync(string searchTerm)
         {
-            return await _userRepository.SearchUsersAsync(searchTerm);
+            var users = await _userRepository.SearchUsersAsync(searchTerm);
+            return _mapper.Map<IEnumerable<UserReadDto>>(users);
         }
 
-        public async Task<IEnumerable<ApplicationUser>> FilterUsersByRoleAsync(string role, bool isActive)
+        public async Task<IEnumerable<UserReadDto>> FilterUsersByRoleAsync(string role, bool isActive)
         {
-            return await _userRepository.FilterUsersAsync(role, isActive);
+            var users = await _userRepository.FilterUsersAsync(role, isActive);
+            return _mapper.Map<IEnumerable<UserReadDto>>(users);
         }
     }
 }

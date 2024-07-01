@@ -1,4 +1,5 @@
-﻿using LibraryArchive.Data.Entities;
+﻿using AutoMapper;
+using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.OrderDetail;
 using LibraryArchive.Services.Repositories.Interfaces;
 
@@ -7,67 +8,41 @@ namespace LibraryArchive.Services
     public class OrderDetailService
     {
         private readonly IOrderDetailRepository _orderDetailRepository;
+        private readonly IMapper _mapper;
 
-        public OrderDetailService(IOrderDetailRepository orderDetailRepository)
+        public OrderDetailService(IOrderDetailRepository orderDetailRepository, IMapper mapper)
         {
             _orderDetailRepository = orderDetailRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<OrderDetailReadDto>> GetAllOrderDetailsAsync()
         {
             var orderDetails = await _orderDetailRepository.GetAllOrderDetailsAsync();
-            return orderDetails.Select(od => new OrderDetailReadDto
-            {
-                OrderDetailId = od.OrderDetailId,
-                BookId = od.BookId,
-                BookTitle = od.Book.Title, // Assuming Book is loaded
-                Quantity = od.Quantity,
-                Price = od.Price
-            }).ToList();
+            return _mapper.Map<IEnumerable<OrderDetailReadDto>>(orderDetails);
         }
 
         public async Task<OrderDetailReadDto> GetOrderDetailByIdAsync(int orderDetailId)
         {
             var orderDetail = await _orderDetailRepository.GetOrderDetailByIdAsync(orderDetailId);
-            if (orderDetail != null)
-            {
-                return new OrderDetailReadDto
-                {
-                    OrderDetailId = orderDetail.OrderDetailId,
-                    BookId = orderDetail.BookId,
-                    BookTitle = orderDetail.Book.Title, // Assuming Book is loaded
-                    Quantity = orderDetail.Quantity,
-                    Price = orderDetail.Price
-                };
-            }
-            return null;
+            return orderDetail != null ? _mapper.Map<OrderDetailReadDto>(orderDetail) : null;
         }
 
-
-
-        public async Task<OrderDetail> AddOrderDetailAsync(OrderDetailCreateDto orderDetailDto)
+        public async Task<OrderDetailReadDto> AddOrderDetailAsync(OrderDetailCreateDto orderDetailDto)
         {
-            var orderDetail = new OrderDetail
-            {
-                OrderId = orderDetailDto.OrderId,
-                BookId = orderDetailDto.BookId,
-                Quantity = orderDetailDto.Quantity,
-                Price = orderDetailDto.Price
-            };
-
-            return await _orderDetailRepository.AddOrderDetailAsync(orderDetail);
+            var orderDetail = _mapper.Map<OrderDetail>(orderDetailDto);
+            var addedOrderDetail = await _orderDetailRepository.AddOrderDetailAsync(orderDetail);
+            return _mapper.Map<OrderDetailReadDto>(addedOrderDetail);
         }
 
-        public async Task<OrderDetail> UpdateOrderDetailAsync(OrderDetailUpdateDto orderDetailDto)
+        public async Task<OrderDetailReadDto> UpdateOrderDetailAsync(OrderDetailUpdateDto orderDetailDto)
         {
             var orderDetail = await _orderDetailRepository.GetOrderDetailByIdAsync(orderDetailDto.OrderDetailId);
             if (orderDetail != null)
             {
-                orderDetail.BookId = orderDetailDto.BookId;
-                orderDetail.Quantity = orderDetailDto.Quantity;
-                orderDetail.Price = orderDetailDto.Price;
-
-                return await _orderDetailRepository.UpdateOrderDetailAsync(orderDetail);
+                _mapper.Map(orderDetailDto, orderDetail);
+                var updatedOrderDetail = await _orderDetailRepository.UpdateOrderDetailAsync(orderDetail);
+                return _mapper.Map<OrderDetailReadDto>(updatedOrderDetail);
             }
             return null;
         }

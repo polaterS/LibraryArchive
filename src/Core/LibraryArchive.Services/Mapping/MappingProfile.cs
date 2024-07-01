@@ -15,53 +15,46 @@ namespace LibraryArchive.Services.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<ApplicationUser, UserReadDto>();
             CreateMap<UserCreateDto, ApplicationUser>();
+            CreateMap<ApplicationUser, UserReadDto>();
             CreateMap<UserUpdateDto, ApplicationUser>();
-            CreateMap<UserDeleteDto, ApplicationUser>();
 
             CreateMap<Book, BookReadDto>()
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name));
             CreateMap<BookCreateDto, Book>();
             CreateMap<BookUpdateDto, Book>();
-            CreateMap<BookDeleteDto, Book>();
+
+            CreateMap<BookShare, BookShareReadDto>();
+            CreateMap<BookShareCreateDto, BookShare>();
+            CreateMap<BookShareUpdateDto, BookShare>();
+
+            CreateMap<Category, CategoryReadDto>()
+                .ForMember(dest => dest.BooksCount, opt => opt.MapFrom(src => src.Books.Count));
+            CreateMap<CategoryCreateDto, Category>();
+            CreateMap<CategoryUpdateDto, Category>();
 
             CreateMap<Note, NoteReadDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
                 .ForMember(dest => dest.BookTitle, opt => opt.MapFrom(src => src.Book.Title));
             CreateMap<NoteCreateDto, Note>();
             CreateMap<NoteUpdateDto, Note>();
-            CreateMap<NoteDeleteDto, Note>();
 
             CreateMap<NoteShare, NoteShareReadDto>()
+                .ForMember(dest => dest.NoteContent, opt => opt.MapFrom(src => src.Note.Content))
                 .ForMember(dest => dest.SharedWithUserName, opt => opt.MapFrom(src => src.SharedWithUser.UserName));
             CreateMap<NoteShareCreateDto, NoteShare>();
             CreateMap<NoteShareUpdateDto, NoteShare>();
-            CreateMap<NoteShareDeleteDto, NoteShare>();
-
-            CreateMap<BookShare, BookShareReadDto>()
-                .ForMember(dest => dest.SharedWithUserName, opt => opt.MapFrom(src => src.SharedWithUser.UserName));
-            CreateMap<BookShareCreateDto, BookShare>();
-            CreateMap<BookShareUpdateDto, BookShare>();
-            CreateMap<BookShareDeleteDto, BookShare>();
-
-            CreateMap<Category, CategoryReadDto>()
-                .ForMember(dest => dest.BooksCount, opt => opt.MapFrom(src => src.Books.Count));
-            CreateMap<CategoryCreateDto, Category>();
-            CreateMap<CategoryUpdateDto, Category>();
-            CreateMap<CategoryDeleteDto, Category>();
 
             CreateMap<Order, OrderReadDto>()
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
-            CreateMap<OrderCreateDto, Order>();
+               .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
+            CreateMap<OrderCreateDto, Order>()
+                .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.Now));
             CreateMap<OrderUpdateDto, Order>();
-            CreateMap<OrderDeleteDto, Order>();
 
             CreateMap<OrderDetail, OrderDetailReadDto>()
                 .ForMember(dest => dest.BookTitle, opt => opt.MapFrom(src => src.Book.Title));
             CreateMap<OrderDetailCreateDto, OrderDetail>();
             CreateMap<OrderDetailUpdateDto, OrderDetail>();
-            CreateMap<OrderDetailDeleteDto, OrderDetail>();
         }
     }
 }

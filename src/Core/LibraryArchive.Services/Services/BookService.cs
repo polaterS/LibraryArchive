@@ -22,42 +22,13 @@ namespace LibraryArchive.Services
         public async Task<IEnumerable<BookReadDto>> GetAllBooksAsync()
         {
             var books = await _bookRepository.GetAllBooksAsync();
-            var bookDtos = new List<BookReadDto>();
-
-            foreach (var book in books)
-            {
-                bookDtos.Add(new BookReadDto
-                {
-                    BookId = book.BookId,
-                    Title = book.Title,
-                    Author = book.Author,
-                    ISBN = book.ISBN,
-                    CoverImageUrl = book.CoverImageUrl,
-                    ShelfLocation = book.ShelfLocation,
-                    CategoryName = book.Category?.Name
-                });
-            }
-
-            return bookDtos;
+            return _mapper.Map<IEnumerable<BookReadDto>>(books);
         }
 
         public async Task<BookReadDto> GetBookByIdAsync(int bookId)
         {
             var book = await _bookRepository.GetBookByIdAsync(bookId);
-            if (book != null)
-            {
-                return new BookReadDto
-                {
-                    BookId = book.BookId,
-                    Title = book.Title,
-                    Author = book.Author,
-                    ISBN = book.ISBN,
-                    CoverImageUrl = book.CoverImageUrl,
-                    ShelfLocation = book.ShelfLocation,
-                    CategoryName = book.Category?.Name
-                };
-            }
-            return null;
+            return book != null ? _mapper.Map<BookReadDto>(book) : null;
         }
 
         public async Task<BookReadDto> AddBookAsync(BookCreateDto bookDto, string userId)
@@ -76,20 +47,14 @@ namespace LibraryArchive.Services
             return _mapper.Map<BookReadDto>(book);
         }
 
-
-        public async Task<Book> UpdateBookAsync(BookUpdateDto bookDto)
+        public async Task<BookReadDto> UpdateBookAsync(BookUpdateDto bookDto)
         {
             var book = await _bookRepository.GetBookByIdAsync(bookDto.BookId);
             if (book != null)
             {
-                book.Title = bookDto.Title;
-                book.Author = bookDto.Author;
-                book.ISBN = bookDto.ISBN;
-                book.CoverImageUrl = bookDto.CoverImageUrl;
-                book.ShelfLocation = bookDto.ShelfLocation;
-                book.CategoryId = bookDto.CategoryId;
-
-                return await _bookRepository.UpdateBookAsync(book);
+                _mapper.Map(bookDto, book);
+                await _bookRepository.UpdateBookAsync(book);
+                return _mapper.Map<BookReadDto>(book);
             }
             return null;
         }
@@ -103,23 +68,7 @@ namespace LibraryArchive.Services
         public async Task<IEnumerable<BookReadDto>> SearchBooksAsync(string searchTerm)
         {
             var books = await _bookRepository.SearchBooksAsync(searchTerm);
-            var bookDtos = new List<BookReadDto>();
-
-            foreach (var book in books)
-            {
-                bookDtos.Add(new BookReadDto
-                {
-                    BookId = book.BookId,
-                    Title = book.Title,
-                    Author = book.Author,
-                    ISBN = book.ISBN,
-                    CoverImageUrl = book.CoverImageUrl,
-                    ShelfLocation = book.ShelfLocation,
-                    CategoryName = book.Category?.Name
-                });
-            }
-
-            return bookDtos;
+            return _mapper.Map<IEnumerable<BookReadDto>>(books);
         }
     }
 }
