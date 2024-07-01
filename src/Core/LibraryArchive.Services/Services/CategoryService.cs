@@ -1,112 +1,68 @@
-﻿using AutoMapper;
-using FluentValidation;
-using LibraryArchive.Data.Entities;
+﻿using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.Category;
 using LibraryArchive.Services.Repositories.Interfaces;
-using Serilog;
 
 namespace LibraryArchive.Services
 {
     public class CategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
-        private readonly IValidator<CategoryCreateDto> _categoryCreateValidator;
-        private readonly IValidator<CategoryUpdateDto> _categoryUpdateValidator;
-        private readonly IValidator<CategoryDeleteDto> _categoryDeleteValidator;
 
-        public CategoryService(
-            ICategoryRepository categoryRepository,
-            IMapper mapper,
-            IValidator<CategoryCreateDto> categoryCreateValidator,
-            IValidator<CategoryUpdateDto> categoryUpdateValidator,
-            IValidator<CategoryDeleteDto> categoryDeleteValidator)
+        public CategoryService(ICategoryRepository categoryRepository)
         {
             _categoryRepository = categoryRepository;
-            _mapper = mapper;
-            _logger = Log.ForContext<CategoryService>();
-            _categoryCreateValidator = categoryCreateValidator;
-            _categoryUpdateValidator = categoryUpdateValidator;
-            _categoryDeleteValidator = categoryDeleteValidator;
-        }
-
-        public async Task<CategoryReadDto> GetCategoryByIdAsync(int categoryId)
-        {
-            try
-            {
-                _logger.Information("Getting category by ID: {CategoryId}", categoryId);
-                var category = await _categoryRepository.GetCategoryByIdAsync(categoryId);
-                return _mapper.Map<CategoryReadDto>(category);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting category by ID: {CategoryId}", categoryId);
-                throw;
-            }
         }
 
         public async Task<IEnumerable<CategoryReadDto>> GetAllCategoriesAsync()
         {
-            try
+            var categories = await _categoryRepository.GetAllCategoriesAsync();
+            return categories.Select(c => new CategoryReadDto
             {
-                _logger.Information("Getting all categories");
-                var categories = await _categoryRepository.GetAllCategoriesAsync();
-                return _mapper.Map<IEnumerable<CategoryReadDto>>(categories);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all categories");
-                throw;
-            }
+                CategoryId = c.CategoryId,
+                Name = c.Name,
+                BooksCount = c.Books.Count
+            }).ToList();
         }
 
-        public async Task AddCategoryAsync(CategoryCreateDto categoryCreateDto)
+        public async Task<CategoryReadDto> GetCategoryByIdAsync(int categoryId)
         {
-            await _categoryCreateValidator.ValidateAndThrowAsync(categoryCreateDto);
-            try
+            var category = await _categoryRepository.GetCategoryByIdAsync(categoryId);
+            if (category != null)
             {
-                var category = _mapper.Map<Category>(categoryCreateDto);
-                _logger.Information("Adding category: {Category}", category);
-                await _categoryRepository.AddCategoryAsync(category);
+                return new CategoryReadDto
+                {
+                    CategoryId = category.CategoryId,
+                    Name = category.Name,
+                    BooksCount = category.Books.Count
+                };
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error adding category: {CategoryCreateDto}", categoryCreateDto);
-                throw;
-            }
+            return null;
         }
 
-        public void RemoveCategory(CategoryDeleteDto categoryDeleteDto)
+        public async Task<Category> AddCategoryAsync(CategoryCreateDto categoryDto)
         {
-            _categoryDeleteValidator.ValidateAndThrow(categoryDeleteDto);
-            try
+            var category = new Category
             {
-                var category = _mapper.Map<Category>(categoryDeleteDto);
-                _logger.Information("Removing category: {Category}", category);
-                _categoryRepository.RemoveCategory(category);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error removing category: {CategoryDeleteDto}", categoryDeleteDto);
-                throw;
-            }
+                Name = categoryDto.Name
+            };
+
+            return await _categoryRepository.AddCategoryAsync(category);
         }
 
-        public void UpdateCategory(CategoryUpdateDto categoryUpdateDto)
+        public async Task<Category> UpdateCategoryAsync(CategoryUpdateDto categoryDto)
         {
-            _categoryUpdateValidator.ValidateAndThrow(categoryUpdateDto);
-            try
+            var category = await _categoryRepository.GetCategoryByIdAsync(categoryDto.CategoryId);
+            if (category != null)
             {
-                var category = _mapper.Map<Category>(categoryUpdateDto);
-                _logger.Information("Updating category: {Category}", category);
-                _categoryRepository.UpdateCategory(category);
+                category.Name = categoryDto.Name;
+                return await _categoryRepository.UpdateCategoryAsync(category);
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating category: {CategoryUpdateDto}", categoryUpdateDto);
-                throw;
-            }
+            return null;
+        }
+
+        public async Task<bool> DeleteCategoryAsync(int categoryId)
+        {
+            return await _categoryRepository.DeleteCategoryAsync(categoryId);
         }
     }
 }

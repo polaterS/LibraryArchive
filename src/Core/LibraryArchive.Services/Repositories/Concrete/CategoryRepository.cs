@@ -2,89 +2,52 @@
 using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 
-namespace LibraryArchive.Services.Repositories.Concrete
+namespace LibraryArchive.Services.Repositories
 {
     public class CategoryRepository : ICategoryRepository
     {
         private readonly LibraryArchiveContext _context;
-        private readonly ILogger _logger;
 
         public CategoryRepository(LibraryArchiveContext context)
         {
             _context = context;
-            _logger = Log.ForContext<CategoryRepository>();
-        }
-
-        public async Task<Category> GetCategoryByIdAsync(int categoryId)
-        {
-            try
-            {
-                _logger.Information("Getting category by ID: {CategoryId}", categoryId);
-                return await _context.Categories.FindAsync(categoryId);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting category by ID: {CategoryId}", categoryId);
-                throw;
-            }
         }
 
         public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
         {
-            try
-            {
-                _logger.Information("Getting all categories");
-                return await _context.Categories.ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all categories");
-                throw;
-            }
+            return await _context.Categories.ToListAsync();
         }
 
-        public async Task AddCategoryAsync(Category category)
+        public async Task<Category> GetCategoryByIdAsync(int categoryId)
         {
-            try
-            {
-                _logger.Information("Adding category: {Category}", category);
-                await _context.Categories.AddAsync(category);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error adding category: {Category}", category);
-                throw;
-            }
+            return await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId == categoryId);
         }
 
-        public void RemoveCategory(Category category)
+        public async Task<Category> AddCategoryAsync(Category category)
         {
-            try
+            _context.Categories.Add(category);
+            await _context.SaveChangesAsync();
+            return category;
+        }
+
+        public async Task<Category> UpdateCategoryAsync(Category category)
+        {
+            _context.Categories.Update(category);
+            await _context.SaveChangesAsync();
+            return category;
+        }
+
+        public async Task<bool> DeleteCategoryAsync(int categoryId)
+        {
+            var category = await GetCategoryByIdAsync(categoryId);
+            if (category != null)
             {
-                _logger.Information("Removing category: {Category}", category);
                 _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
+                return true;
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error removing category: {Category}", category);
-                throw;
-            }
-        }
-
-        public void UpdateCategory(Category category)
-        {
-            try
-            {
-                _logger.Information("Updating category: {Category}", category);
-                _context.Categories.Update(category);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating category: {Category}", category);
-                throw;
-            }
+            return false;
         }
     }
 }

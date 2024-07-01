@@ -40,10 +40,6 @@ namespace LibraryArchive.API
             // Register services and validators
             builder.Services.AddLibraryArchiveServices();
 
-            // Add UserService to the service collection
-            builder.Services.AddScoped<UserService>();
-            builder.Services.AddScoped<AuthService>();
-            
 
             var app = builder.Build();
 

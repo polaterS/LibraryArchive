@@ -19,6 +19,8 @@ using LibraryArchive.Services.Repositories.Concrete;
 using LibraryArchive.Services.Repositories.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using LibraryArchive.Services.Repositories;
+using LibraryArchive.Services.Services;
+using LibraryArchive.Services.Units;
 
 namespace LibraryArchive.Services.Registration
 {
@@ -60,6 +62,7 @@ namespace LibraryArchive.Services.Registration
             services.AddTransient<IValidator<OrderDetailDeleteDto>, OrderDetailDeleteDtoValidator>();
 
             // Repositories
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<IBookShareRepository, BookShareRepository>();
@@ -68,6 +71,17 @@ namespace LibraryArchive.Services.Registration
             services.AddScoped<INoteShareRepository, NoteShareRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+
+            // Add UserService to the service collection
+            services.AddScoped<UserService>();
+            services.AddScoped<AuthService>();
+            services.AddScoped<BookService>();
+            services.AddScoped<CategoryService>();
+            services.AddScoped<BookShareService>();
+            services.AddScoped<NoteService>();
+            services.AddScoped<NoteShareService>();
+            services.AddScoped<OrderService>();
+            services.AddScoped<OrderDetailService>();
         }
     }
 }

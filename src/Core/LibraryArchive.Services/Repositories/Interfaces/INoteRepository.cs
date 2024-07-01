@@ -4,11 +4,10 @@ namespace LibraryArchive.Services.Repositories.Interfaces
 {
     public interface INoteRepository
     {
-        Task<Note> GetNoteByIdAsync(int noteId);
         Task<IEnumerable<Note>> GetAllNotesAsync();
-        Task<IEnumerable<Note>> GetNotesByUserIdAsync(string userId);
-        Task AddNoteAsync(Note note);
-        void RemoveNote(Note note);
-        void UpdateNote(Note note);
+        Task<Note> GetNoteByIdAsync(int noteId);
+        Task<Note> AddNoteAsync(Note note);
+        Task<Note> UpdateNoteAsync(Note note);
+        Task<bool> DeleteNoteAsync(int noteId);
     }
 }

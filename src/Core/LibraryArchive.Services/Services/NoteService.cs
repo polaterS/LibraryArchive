@@ -1,127 +1,78 @@
-﻿using AutoMapper;
-using FluentValidation;
-using LibraryArchive.Data.Entities;
+﻿using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.Note;
 using LibraryArchive.Services.Repositories.Interfaces;
-using Serilog;
 
 namespace LibraryArchive.Services
 {
     public class NoteService
     {
         private readonly INoteRepository _noteRepository;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
-        private readonly IValidator<NoteCreateDto> _noteCreateValidator;
-        private readonly IValidator<NoteUpdateDto> _noteUpdateValidator;
-        private readonly IValidator<NoteDeleteDto> _noteDeleteValidator;
 
-        public NoteService(
-            INoteRepository noteRepository,
-            IMapper mapper,
-            IValidator<NoteCreateDto> noteCreateValidator,
-            IValidator<NoteUpdateDto> noteUpdateValidator,
-            IValidator<NoteDeleteDto> noteDeleteValidator)
+        public NoteService(INoteRepository noteRepository)
         {
             _noteRepository = noteRepository;
-            _mapper = mapper;
-            _logger = Log.ForContext<NoteService>();
-            _noteCreateValidator = noteCreateValidator;
-            _noteUpdateValidator = noteUpdateValidator;
-            _noteDeleteValidator = noteDeleteValidator;
-        }
-
-        public async Task<NoteReadDto> GetNoteByIdAsync(int noteId)
-        {
-            try
-            {
-                _logger.Information("Getting note by ID: {NoteId}", noteId);
-                var note = await _noteRepository.GetNoteByIdAsync(noteId);
-                return _mapper.Map<NoteReadDto>(note);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting note by ID: {NoteId}", noteId);
-                throw;
-            }
         }
 
         public async Task<IEnumerable<NoteReadDto>> GetAllNotesAsync()
         {
-            try
+            var notes = await _noteRepository.GetAllNotesAsync();
+            return notes.Select(n => new NoteReadDto
             {
-                _logger.Information("Getting all notes");
-                var notes = await _noteRepository.GetAllNotesAsync();
-                return _mapper.Map<IEnumerable<NoteReadDto>>(notes);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all notes");
-                throw;
-            }
+                NoteId = n.NoteId,
+                BookId = n.BookId,
+                Content = n.Content,
+                IsPrivate = n.IsPrivate,
+                UserName = n.User.UserName,  // Assuming that the User relation is included
+                BookTitle = n.Book.Title     // Assuming that the Book relation is included
+            }).ToList();
         }
 
-        public async Task<IEnumerable<NoteReadDto>> GetNotesByUserIdAsync(string userId)
+        public async Task<NoteReadDto> GetNoteByIdAsync(int noteId)
         {
-            try
+            var note = await _noteRepository.GetNoteByIdAsync(noteId);
+            if (note != null)
             {
-                _logger.Information("Getting notes by user ID: {UserId}", userId);
-                var notes = await _noteRepository.GetNotesByUserIdAsync(userId);
-                return _mapper.Map<IEnumerable<NoteReadDto>>(notes);
+                return new NoteReadDto
+                {
+                    NoteId = note.NoteId,
+                    BookId = note.BookId,
+                    Content = note.Content,
+                    IsPrivate = note.IsPrivate,
+                    UserName = note.User.UserName,  // Assuming User is loaded
+                    BookTitle = note.Book.Title     // Assuming Book is loaded
+                };
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting notes by user ID: {UserId}", userId);
-                throw;
-            }
+            return null;
         }
 
-        public async Task AddNoteAsync(NoteCreateDto noteCreateDto)
+        public async Task<Note> AddNoteAsync(NoteCreateDto noteDto)
         {
-            await _noteCreateValidator.ValidateAndThrowAsync(noteCreateDto);
-            try
+            var note = new Note
             {
-                var note = _mapper.Map<Note>(noteCreateDto);
-                _logger.Information("Adding note: {Note}", note);
-                await _noteRepository.AddNoteAsync(note);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error adding note: {NoteCreateDto}", noteCreateDto);
-                throw;
-            }
+                BookId = noteDto.BookId,
+                Content = noteDto.Content,
+                IsPrivate = noteDto.IsPrivate,
+                UserId = noteDto.UserId  // Assuming UserId is part of NoteCreateDto
+            };
+
+            return await _noteRepository.AddNoteAsync(note);
         }
 
-        public void RemoveNote(NoteDeleteDto noteDeleteDto)
+        public async Task<Note> UpdateNoteAsync(NoteUpdateDto noteDto)
         {
-            _noteDeleteValidator.ValidateAndThrow(noteDeleteDto);
-            try
+            var note = await _noteRepository.GetNoteByIdAsync(noteDto.NoteId);
+            if (note != null)
             {
-                var note = _mapper.Map<Note>(noteDeleteDto);
-                _logger.Information("Removing note: {Note}", note);
-                _noteRepository.RemoveNote(note);
+                note.Content = noteDto.Content;
+                note.IsPrivate = noteDto.IsPrivate;
+                return await _noteRepository.UpdateNoteAsync(note);
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error removing note: {NoteDeleteDto}", noteDeleteDto);
-                throw;
-            }
+            return null;
         }
 
-        public void UpdateNote(NoteUpdateDto noteUpdateDto)
+        public async Task<bool> DeleteNoteAsync(int noteId)
         {
-            _noteUpdateValidator.ValidateAndThrow(noteUpdateDto);
-            try
-            {
-                var note = _mapper.Map<Note>(noteUpdateDto);
-                _logger.Information("Updating note: {Note}", note);
-                _noteRepository.UpdateNote(note);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating note: {NoteUpdateDto}", noteUpdateDto);
-                throw;
-            }
+            return await _noteRepository.DeleteNoteAsync(noteId);
         }
     }
 }
