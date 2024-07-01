@@ -1,127 +1,117 @@
-﻿using AutoMapper;
-using FluentValidation;
-using LibraryArchive.Data.Entities;
+﻿using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.Book;
 using LibraryArchive.Services.Repositories.Interfaces;
-using Serilog;
 
 namespace LibraryArchive.Services
 {
     public class BookService
     {
         private readonly IBookRepository _bookRepository;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
-        private readonly IValidator<BookCreateDto> _bookCreateValidator;
-        private readonly IValidator<BookUpdateDto> _bookUpdateValidator;
-        private readonly IValidator<BookDeleteDto> _bookDeleteValidator;
 
-        public BookService(
-            IBookRepository bookRepository,
-            IMapper mapper,
-            IValidator<BookCreateDto> bookCreateValidator,
-            IValidator<BookUpdateDto> bookUpdateValidator,
-            IValidator<BookDeleteDto> bookDeleteValidator)
+        public BookService(IBookRepository bookRepository)
         {
             _bookRepository = bookRepository;
-            _mapper = mapper;
-            _logger = Log.ForContext<BookService>();
-            _bookCreateValidator = bookCreateValidator;
-            _bookUpdateValidator = bookUpdateValidator;
-            _bookDeleteValidator = bookDeleteValidator;
-        }
-
-        public async Task<BookReadDto> GetBookByIdAsync(int bookId)
-        {
-            try
-            {
-                _logger.Information("Getting book by ID: {BookId}", bookId);
-                var book = await _bookRepository.GetBookByIdAsync(bookId);
-                return _mapper.Map<BookReadDto>(book);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting book by ID: {BookId}", bookId);
-                throw;
-            }
         }
 
         public async Task<IEnumerable<BookReadDto>> GetAllBooksAsync()
         {
-            try
+            var books = await _bookRepository.GetAllBooksAsync();
+            var bookDtos = new List<BookReadDto>();
+
+            foreach (var book in books)
             {
-                _logger.Information("Getting all books");
-                var books = await _bookRepository.GetAllBooksAsync();
-                return _mapper.Map<IEnumerable<BookReadDto>>(books);
+                bookDtos.Add(new BookReadDto
+                {
+                    BookId = book.BookId,
+                    Title = book.Title,
+                    Author = book.Author,
+                    ISBN = book.ISBN,
+                    CoverImageUrl = book.CoverImageUrl,
+                    ShelfLocation = book.ShelfLocation,
+                    CategoryName = book.Category?.Name
+                });
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all books");
-                throw;
-            }
+
+            return bookDtos;
         }
 
-        public async Task<IEnumerable<BookReadDto>> GetBooksByUserIdAsync(string userId)
+        public async Task<BookReadDto> GetBookByIdAsync(int bookId)
         {
-            try
+            var book = await _bookRepository.GetBookByIdAsync(bookId);
+            if (book != null)
             {
-                _logger.Information("Getting books by user ID: {UserId}", userId);
-                var books = await _bookRepository.GetBooksByUserIdAsync(userId);
-                return _mapper.Map<IEnumerable<BookReadDto>>(books);
+                return new BookReadDto
+                {
+                    BookId = book.BookId,
+                    Title = book.Title,
+                    Author = book.Author,
+                    ISBN = book.ISBN,
+                    CoverImageUrl = book.CoverImageUrl,
+                    ShelfLocation = book.ShelfLocation,
+                    CategoryName = book.Category?.Name
+                };
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting books by user ID: {UserId}", userId);
-                throw;
-            }
+            return null;
         }
 
-        public async Task AddBookAsync(BookCreateDto bookCreateDto)
+        public async Task<Book> AddBookAsync(BookCreateDto bookDto)
         {
-            await _bookCreateValidator.ValidateAndThrowAsync(bookCreateDto);
-            try
+            var book = new Book
             {
-                var book = _mapper.Map<Book>(bookCreateDto);
-                _logger.Information("Adding book: {Book}", book);
-                await _bookRepository.AddBookAsync(book);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error adding book: {BookCreateDto}", bookCreateDto);
-                throw;
-            }
+                Title = bookDto.Title,
+                Author = bookDto.Author,
+                ISBN = bookDto.ISBN,
+                CoverImageUrl = bookDto.CoverImageUrl,
+                ShelfLocation = bookDto.ShelfLocation,
+                CategoryId = bookDto.CategoryId
+            };
+
+            return await _bookRepository.AddBookAsync(book);
         }
 
-        public void RemoveBook(BookDeleteDto bookDeleteDto)
+        public async Task<Book> UpdateBookAsync(BookUpdateDto bookDto)
         {
-            _bookDeleteValidator.ValidateAndThrow(bookDeleteDto);
-            try
+            var book = await _bookRepository.GetBookByIdAsync(bookDto.BookId);
+            if (book != null)
             {
-                var book = _mapper.Map<Book>(bookDeleteDto);
-                _logger.Information("Removing book: {Book}", book);
-                _bookRepository.RemoveBook(book);
+                book.Title = bookDto.Title;
+                book.Author = bookDto.Author;
+                book.ISBN = bookDto.ISBN;
+                book.CoverImageUrl = bookDto.CoverImageUrl;
+                book.ShelfLocation = bookDto.ShelfLocation;
+                book.CategoryId = bookDto.CategoryId;
+
+                return await _bookRepository.UpdateBookAsync(book);
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error removing book: {BookDeleteDto}", bookDeleteDto);
-                throw;
-            }
+            return null;
         }
 
-        public void UpdateBook(BookUpdateDto bookUpdateDto)
+        public async Task<bool> DeleteBookAsync(int bookId)
         {
-            _bookUpdateValidator.ValidateAndThrow(bookUpdateDto);
-            try
+            var book = await _bookRepository.DeleteBookAsync(bookId);
+            return book != null;
+        }
+
+        public async Task<IEnumerable<BookReadDto>> SearchBooksAsync(string searchTerm)
+        {
+            var books = await _bookRepository.SearchBooksAsync(searchTerm);
+            var bookDtos = new List<BookReadDto>();
+
+            foreach (var book in books)
             {
-                var book = _mapper.Map<Book>(bookUpdateDto);
-                _logger.Information("Updating book: {Book}", book);
-                _bookRepository.UpdateBook(book);
+                bookDtos.Add(new BookReadDto
+                {
+                    BookId = book.BookId,
+                    Title = book.Title,
+                    Author = book.Author,
+                    ISBN = book.ISBN,
+                    CoverImageUrl = book.CoverImageUrl,
+                    ShelfLocation = book.ShelfLocation,
+                    CategoryName = book.Category?.Name
+                });
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating book: {BookUpdateDto}", bookUpdateDto);
-                throw;
-            }
+
+            return bookDtos;
         }
     }
 }

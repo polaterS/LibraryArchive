@@ -2,115 +2,63 @@
 using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace LibraryArchive.Services.Repositories.Concrete
+namespace LibraryArchive.Services.Repositories
 {
     public class BookRepository : IBookRepository
     {
         private readonly LibraryArchiveContext _context;
-        private readonly ILogger _logger;
 
         public BookRepository(LibraryArchiveContext context)
         {
             _context = context;
-            _logger = Log.ForContext<BookRepository>();
-        }
-
-        public async Task<Book> GetBookByIdAsync(int bookId)
-        {
-            try
-            {
-                _logger.Information("Getting book by ID: {BookId}", bookId);
-                return await _context.Books
-                    .Include(b => b.Category)
-                    .Include(b => b.User)
-                    .FirstOrDefaultAsync(b => b.BookId == bookId);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting book by ID: {BookId}", bookId);
-                throw;
-            }
         }
 
         public async Task<IEnumerable<Book>> GetAllBooksAsync()
         {
-            try
-            {
-                _logger.Information("Getting all books");
-                return await _context.Books
-                    .Include(b => b.Category)
-                    .Include(b => b.User)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all books");
-                throw;
-            }
+            return await _context.Books
+                .Include(b => b.Category) // Kategori bilgisini de çeker
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Book>> GetBooksByUserIdAsync(string userId)
+        public async Task<Book> GetBookByIdAsync(int bookId)
         {
-            try
-            {
-                _logger.Information("Getting books by user ID: {UserId}", userId);
-                return await _context.Books
-                    .Include(b => b.Category)
-                    .Include(b => b.User)
-                    .Where(b => b.UserId == userId)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting books by user ID: {UserId}", userId);
-                throw;
-            }
+            return await _context.Books
+                .Include(b => b.Category) // Kategori bilgisini de çeker
+                .FirstOrDefaultAsync(b => b.BookId == bookId);
         }
 
-        public async Task AddBookAsync(Book book)
+        public async Task<Book> AddBookAsync(Book book)
         {
-            try
-            {
-                _logger.Information("Adding book: {Book}", book);
-                await _context.Books.AddAsync(book);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error adding book: {Book}", book);
-                throw;
-            }
+            _context.Books.Add(book);
+            await _context.SaveChangesAsync();
+            return book;
         }
 
-        public void RemoveBook(Book book)
+        public async Task<Book> UpdateBookAsync(Book book)
         {
-            try
+            _context.Books.Update(book);
+            await _context.SaveChangesAsync();
+            return book;
+        }
+
+        public async Task<Book> DeleteBookAsync(int bookId)
+        {
+            var book = await GetBookByIdAsync(bookId);
+            if (book != null)
             {
-                _logger.Information("Removing book: {Book}", book);
                 _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error removing book: {Book}", book);
-                throw;
-            }
+            return book;
         }
 
-        public void UpdateBook(Book book)
+        public async Task<IEnumerable<Book>> SearchBooksAsync(string searchTerm)
         {
-            try
-            {
-                _logger.Information("Updating book: {Book}", book);
-                _context.Books.Update(book);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating book: {Book}", book);
-                throw;
-            }
+            return await _context.Books
+                .Where(b => b.Title.Contains(searchTerm) || b.Author.Contains(searchTerm) || b.ISBN.Contains(searchTerm))
+                .Include(b => b.Category) // Kategori bilgisini de çeker
+                .ToListAsync();
         }
     }
 }

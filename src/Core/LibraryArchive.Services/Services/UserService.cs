@@ -1,112 +1,88 @@
-﻿using AutoMapper;
-using FluentValidation;
-using LibraryArchive.Data.Entities;
+﻿using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.User;
 using LibraryArchive.Services.Repositories.Interfaces;
-using Serilog;
+using Microsoft.AspNetCore.Identity;
 
 namespace LibraryArchive.Services
 {
     public class UserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
-        private readonly IValidator<UserCreateDto> _userCreateValidator;
-        private readonly IValidator<UserUpdateDto> _userUpdateValidator;
-        private readonly IValidator<UserDeleteDto> _userDeleteValidator;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserService(
-            IUserRepository userRepository,
-            IMapper mapper,
-            IValidator<UserCreateDto> userCreateValidator,
-            IValidator<UserUpdateDto> userUpdateValidator,
-            IValidator<UserDeleteDto> userDeleteValidator)
+        public UserService(IUserRepository userRepository, UserManager<ApplicationUser> userManager)
         {
             _userRepository = userRepository;
-            _mapper = mapper;
-            _logger = Log.ForContext<UserService>();
-            _userCreateValidator = userCreateValidator;
-            _userUpdateValidator = userUpdateValidator;
-            _userDeleteValidator = userDeleteValidator;
+            _userManager = userManager;
         }
 
-        public async Task<UserReadDto> GetUserByIdAsync(string userId)
+        public async Task<(IdentityResult, ApplicationUser)> RegisterUserAsync(UserCreateDto userDto)
         {
-            try
+            var user = new ApplicationUser
             {
-                _logger.Information("Getting user by ID: {UserId}", userId);
-                var user = await _userRepository.GetUserByIdAsync(userId);
-                return _mapper.Map<UserReadDto>(user);
-            }
-            catch (Exception ex)
+                UserName = userDto.UserName,
+                Email = userDto.Email,
+                Name = userDto.Name,
+                Surname = userDto.Surname,
+                IsActive = true
+            };
+
+            var result = await _userManager.CreateAsync(user, userDto.Password);
+            if (result.Succeeded)
             {
-                _logger.Error(ex, "Error getting user by ID: {UserId}", userId);
-                throw;
+                // Kullanıcı başarıyla oluşturulduktan sonra, UserManager kullanılarak kullanıcıyı tekrar buluyoruz.
+                var createdUser = await _userManager.FindByNameAsync(user.UserName);
+                return (result, createdUser);
             }
+            return (result, null);
         }
 
-        public async Task<IEnumerable<UserReadDto>> GetAllUsersAsync()
+
+        public async Task<ApplicationUser> GetUserByIdAsync(string id)
         {
-            try
-            {
-                _logger.Information("Getting all users");
-                var users = await _userRepository.GetAllUsersAsync();
-                return _mapper.Map<IEnumerable<UserReadDto>>(users);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all users");
-                throw;
-            }
+            return await _userRepository.GetByIdAsync(id);
         }
 
-        public async Task AddUserAsync(UserCreateDto userCreateDto)
+        public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync()
         {
-            await _userCreateValidator.ValidateAndThrowAsync(userCreateDto);
-            try
-            {
-                var user = _mapper.Map<ApplicationUser>(userCreateDto);
-                _logger.Information("Adding user: {User}", user);
-                await _userRepository.AddUserAsync(user);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error adding user: {UserCreateDto}", userCreateDto);
-                throw;
-            }
+            return await _userRepository.GetAllAsync();
         }
 
-        public void RemoveUser(UserDeleteDto userDeleteDto)
+        public async Task<IdentityResult> UpdateUserAsync(UserUpdateDto userDto)
         {
-            _userDeleteValidator.ValidateAndThrow(userDeleteDto);
-            try
+            var user = await _userRepository.GetByIdAsync(userDto.Id);
+            if (user != null)
             {
-                var user = _mapper.Map<ApplicationUser>(userDeleteDto);
-                _logger.Information("Removing user: {User}", user);
-                _userRepository.RemoveUser(user);
+                user.Email = userDto.Email;
+                user.Name = userDto.Name;
+                user.Surname = userDto.Surname;
+
+                var result = await _userManager.UpdateAsync(user);
+                return result;
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error removing user: {UserDeleteDto}", userDeleteDto);
-                throw;
-            }
+            return IdentityResult.Failed(new IdentityError { Description = "User not found." });
         }
 
-        public void UpdateUser(UserUpdateDto userUpdateDto)
+
+        public async Task<IdentityResult> DeleteUserAsync(string id)
         {
-            _userUpdateValidator.ValidateAndThrow(userUpdateDto);
-            try
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user != null)
             {
-                var user = _mapper.Map<ApplicationUser>(userUpdateDto);
-                _logger.Information("Updating user: {User}", user);
-                _userRepository.UpdateUser(user);
+                var result = await _userManager.DeleteAsync(user);
+                return result;
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating user: {UserUpdateDto}", userUpdateDto);
-                throw;
-            }
+            return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+        }
+
+        public async Task<IEnumerable<ApplicationUser>> SearchUsersAsync(string searchTerm)
+        {
+            return await _userRepository.SearchUsersAsync(searchTerm);
+        }
+
+        public async Task<IEnumerable<ApplicationUser>> FilterUsersByRoleAsync(string role, bool isActive)
+        {
+            return await _userRepository.FilterUsersAsync(role, isActive);
         }
     }
 }

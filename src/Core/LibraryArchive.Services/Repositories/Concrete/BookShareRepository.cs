@@ -2,116 +2,54 @@
 using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace LibraryArchive.Services.Repositories.Concrete
+namespace LibraryArchive.Services.Repositories
 {
     public class BookShareRepository : IBookShareRepository
     {
         private readonly LibraryArchiveContext _context;
-        private readonly ILogger _logger;
 
         public BookShareRepository(LibraryArchiveContext context)
         {
             _context = context;
-            _logger = Log.ForContext<BookShareRepository>();
-        }
-
-        public async Task<BookShare> GetBookShareByIdAsync(int bookShareId)
-        {
-            try
-            {
-                _logger.Information("Getting book share by ID: {BookShareId}", bookShareId);
-                return await _context.BookShares
-                    .Include(bs => bs.Note)
-                    .Include(bs => bs.SharedWithUser)
-                    .FirstOrDefaultAsync(bs => bs.BookShareId == bookShareId);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting book share by ID: {BookShareId}", bookShareId);
-                throw;
-            }
         }
 
         public async Task<IEnumerable<BookShare>> GetAllBookSharesAsync()
         {
-            try
-            {
-                _logger.Information("Getting all book shares");
-                return await _context.BookShares
-                    .Include(bs => bs.Note)
-                    .Include(bs => bs.SharedWithUser)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all book shares");
-                throw;
-            }
+            return await _context.BookShares.Include(bs => bs.Note).Include(bs => bs.SharedWithUser).ToListAsync();
         }
 
-        public async Task<IEnumerable<BookShare>> GetBookSharesByUserIdAsync(string userId)
+        public async Task<BookShare> GetBookShareByIdAsync(int bookShareId)
         {
-            try
-            {
-                _logger.Information("Getting book shares by user ID: {UserId}", userId);
-                return await _context.BookShares
-                    .Include(bs => bs.Note)
-                    .Include(bs => bs.SharedWithUser)
-                    .Where(bs => bs.SharedWithUserId == userId)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting book shares by user ID: {UserId}", userId);
-                throw;
-            }
+            return await _context.BookShares
+                .Include(bs => bs.Note)
+                .Include(bs => bs.SharedWithUser)
+                .FirstOrDefaultAsync(bs => bs.BookShareId == bookShareId);
         }
 
-        public async Task AddBookShareAsync(BookShare bookShare)
+        public async Task<BookShare> AddBookShareAsync(BookShare bookShare)
         {
-            try
-            {
-                _logger.Information("Adding book share: {BookShare}", bookShare);
-                await _context.BookShares.AddAsync(bookShare);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error adding book share: {BookShare}", bookShare);
-                throw;
-            }
+            _context.BookShares.Add(bookShare);
+            await _context.SaveChangesAsync();
+            return bookShare;
         }
 
-        public void RemoveBookShare(BookShare bookShare)
+        public async Task<BookShare> UpdateBookShareAsync(BookShare bookShare)
         {
-            try
+            _context.BookShares.Update(bookShare);
+            await _context.SaveChangesAsync();
+            return bookShare;
+        }
+
+        public async Task<BookShare> DeleteBookShareAsync(int bookShareId)
+        {
+            var bookShare = await GetBookShareByIdAsync(bookShareId);
+            if (bookShare != null)
             {
-                _logger.Information("Removing book share: {BookShare}", bookShare);
                 _context.BookShares.Remove(bookShare);
+                await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error removing book share: {BookShare}", bookShare);
-                throw;
-            }
-        }
-
-        public void UpdateBookShare(BookShare bookShare)
-        {
-            try
-            {
-                _logger.Information("Updating book share: {BookShare}", bookShare);
-                _context.BookShares.Update(bookShare);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating book share: {BookShare}", bookShare);
-                throw;
-            }
+            return bookShare;
         }
     }
 }

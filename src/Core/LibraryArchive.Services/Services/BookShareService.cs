@@ -1,127 +1,83 @@
-﻿using AutoMapper;
-using FluentValidation;
-using LibraryArchive.Data.Entities;
+﻿using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.BookShare;
 using LibraryArchive.Services.Repositories.Interfaces;
-using Serilog;
 
 namespace LibraryArchive.Services
 {
     public class BookShareService
     {
         private readonly IBookShareRepository _bookShareRepository;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
-        private readonly IValidator<BookShareCreateDto> _bookShareCreateValidator;
-        private readonly IValidator<BookShareUpdateDto> _bookShareUpdateValidator;
-        private readonly IValidator<BookShareDeleteDto> _bookShareDeleteValidator;
 
-        public BookShareService(
-            IBookShareRepository bookShareRepository,
-            IMapper mapper,
-            IValidator<BookShareCreateDto> bookShareCreateValidator,
-            IValidator<BookShareUpdateDto> bookShareUpdateValidator,
-            IValidator<BookShareDeleteDto> bookShareDeleteValidator)
+        public BookShareService(IBookShareRepository bookShareRepository)
         {
             _bookShareRepository = bookShareRepository;
-            _mapper = mapper;
-            _logger = Log.ForContext<BookShareService>();
-            _bookShareCreateValidator = bookShareCreateValidator;
-            _bookShareUpdateValidator = bookShareUpdateValidator;
-            _bookShareDeleteValidator = bookShareDeleteValidator;
-        }
-
-        public async Task<BookShareReadDto> GetBookShareByIdAsync(int bookShareId)
-        {
-            try
-            {
-                _logger.Information("Getting book share by ID: {BookShareId}", bookShareId);
-                var bookShare = await _bookShareRepository.GetBookShareByIdAsync(bookShareId);
-                return _mapper.Map<BookShareReadDto>(bookShare);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting book share by ID: {BookShareId}", bookShareId);
-                throw;
-            }
         }
 
         public async Task<IEnumerable<BookShareReadDto>> GetAllBookSharesAsync()
         {
-            try
+            var bookShares = await _bookShareRepository.GetAllBookSharesAsync();
+            var bookShareDtos = new List<BookShareReadDto>();
+
+            foreach (var bookShare in bookShares)
             {
-                _logger.Information("Getting all book shares");
-                var bookShares = await _bookShareRepository.GetAllBookSharesAsync();
-                return _mapper.Map<IEnumerable<BookShareReadDto>>(bookShares);
+                bookShareDtos.Add(new BookShareReadDto
+                {
+                    BookShareId = bookShare.BookShareId,
+                    NoteId = bookShare.NoteId,
+                    SharedWithUserId = bookShare.SharedWithUserId,
+                    ShareType = bookShare.ShareType
+                });
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all book shares");
-                throw;
-            }
+
+            return bookShareDtos;
         }
 
-        public async Task<IEnumerable<BookShareReadDto>> GetBookSharesByUserIdAsync(string userId)
+        public async Task<BookShareReadDto> GetBookShareByIdAsync(int bookShareId)
         {
-            try
+            var bookShare = await _bookShareRepository.GetBookShareByIdAsync(bookShareId);
+            if (bookShare != null)
             {
-                _logger.Information("Getting book shares by user ID: {UserId}", userId);
-                var bookShares = await _bookShareRepository.GetBookSharesByUserIdAsync(userId);
-                return _mapper.Map<IEnumerable<BookShareReadDto>>(bookShares);
+                return new BookShareReadDto
+                {
+                    BookShareId = bookShare.BookShareId,
+                    NoteId = bookShare.NoteId,
+                    SharedWithUserId = bookShare.SharedWithUserId,
+                    ShareType = bookShare.ShareType
+                };
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting book shares by user ID: {UserId}", userId);
-                throw;
-            }
+            return null;
         }
 
-        public async Task AddBookShareAsync(BookShareCreateDto bookShareCreateDto)
+        public async Task<BookShare> AddBookShareAsync(BookShareCreateDto bookShareDto)
         {
-            await _bookShareCreateValidator.ValidateAndThrowAsync(bookShareCreateDto);
-            try
+            var bookShare = new BookShare
             {
-                var bookShare = _mapper.Map<BookShare>(bookShareCreateDto);
-                _logger.Information("Adding book share: {BookShare}", bookShare);
-                await _bookShareRepository.AddBookShareAsync(bookShare);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error adding book share: {BookShareCreateDto}", bookShareCreateDto);
-                throw;
-            }
+                NoteId = bookShareDto.NoteId,
+                SharedWithUserId = bookShareDto.SharedWithUserId,
+                ShareType = bookShareDto.ShareType
+            };
+
+            return await _bookShareRepository.AddBookShareAsync(bookShare);
         }
 
-        public void RemoveBookShare(BookShareDeleteDto bookShareDeleteDto)
+        public async Task<BookShare> UpdateBookShareAsync(BookShareUpdateDto bookShareDto)
         {
-            _bookShareDeleteValidator.ValidateAndThrow(bookShareDeleteDto);
-            try
+            var bookShare = await _bookShareRepository.GetBookShareByIdAsync(bookShareDto.BookShareId);
+            if (bookShare != null)
             {
-                var bookShare = _mapper.Map<BookShare>(bookShareDeleteDto);
-                _logger.Information("Removing book share: {BookShare}", bookShare);
-                _bookShareRepository.RemoveBookShare(bookShare);
+                bookShare.NoteId = bookShareDto.NoteId;
+                bookShare.SharedWithUserId = bookShareDto.SharedWithUserId;
+                bookShare.ShareType = bookShareDto.ShareType;
+
+                return await _bookShareRepository.UpdateBookShareAsync(bookShare);
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error removing book share: {BookShareDeleteDto}", bookShareDeleteDto);
-                throw;
-            }
+            return null;
         }
 
-        public void UpdateBookShare(BookShareUpdateDto bookShareUpdateDto)
+        public async Task<bool> DeleteBookShareAsync(int bookShareId)
         {
-            _bookShareUpdateValidator.ValidateAndThrow(bookShareUpdateDto);
-            try
-            {
-                var bookShare = _mapper.Map<BookShare>(bookShareUpdateDto);
-                _logger.Information("Updating book share: {BookShare}", bookShare);
-                _bookShareRepository.UpdateBookShare(bookShare);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating book share: {BookShareUpdateDto}", bookShareUpdateDto);
-                throw;
-            }
+            var bookShare = await _bookShareRepository.DeleteBookShareAsync(bookShareId);
+            return bookShare != null;
         }
     }
 }

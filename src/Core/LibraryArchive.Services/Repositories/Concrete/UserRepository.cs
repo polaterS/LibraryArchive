@@ -1,104 +1,78 @@
 ﻿using LibraryArchive.Data.Context;
 using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 
-namespace LibraryArchive.Services.Repositories.Concrete
+namespace LibraryArchive.Services.Repositories
 {
     public class UserRepository : IUserRepository
     {
         private readonly LibraryArchiveContext _context;
-        private readonly ILogger _logger;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserRepository(LibraryArchiveContext context)
+        public UserRepository(LibraryArchiveContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
-            _logger = Log.ForContext<UserRepository>();
+            _userManager = userManager;
         }
 
-        public async Task<ApplicationUser> GetUserByIdAsync(string userId)
+        public async Task<ApplicationUser> GetByIdAsync(string id)
         {
-            try
-            {
-                _logger.Information("Getting user by ID: {UserId}", userId);
-                return await _context.Users.FindAsync(userId);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting user by ID: {UserId}", userId);
-                throw;
-            }
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<ApplicationUser> GetUserByEmailAsync(string email)
+        public async Task<IEnumerable<ApplicationUser>> GetAllAsync()
         {
-            try
-            {
-                _logger.Information("Getting user by email: {Email}", email);
-                return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting user by email: {Email}", email);
-                throw;
-            }
+            return await _context.Users.ToListAsync();
         }
 
-        public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync()
+        public async Task<IEnumerable<ApplicationUser>> SearchUsersAsync(string searchTerm)
         {
-            try
-            {
-                _logger.Information("Getting all users");
-                return await _context.Users.ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting all users");
-                throw;
-            }
+            return await _context.Users
+                .Where(u => u.UserName.Contains(searchTerm) || u.Email.Contains(searchTerm))
+                .ToListAsync();
         }
 
-        public async Task AddUserAsync(ApplicationUser user)
+        public async Task<IEnumerable<ApplicationUser>> FilterUsersAsync(string role, bool isActive)
         {
-            try
+            var users = await _userManager.Users.Where(u => u.IsActive == isActive).ToListAsync();
+            var usersInRole = new List<ApplicationUser>();
+
+            foreach (var user in users)
             {
-                _logger.Information("Adding user: {User}", user);
-                await _context.Users.AddAsync(user);
+                if (await _userManager.IsInRoleAsync(user, role))
+                {
+                    usersInRole.Add(user);
+                }
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error adding user: {User}", user);
-                throw;
-            }
+
+            return usersInRole;
         }
 
-        public void RemoveUser(ApplicationUser user)
+        public async Task<ApplicationUser> AddAsync(ApplicationUser user)
         {
-            try
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
+        public async Task<ApplicationUser> UpdateAsync(ApplicationUser user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
+        public async Task<ApplicationUser> DeleteAsync(string id)
+        {
+            var user = await GetByIdAsync(id);
+            if (user != null)
             {
-                _logger.Information("Removing user: {User}", user);
                 _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error removing user: {User}", user);
-                throw;
-            }
-        }
-
-        public void UpdateUser(ApplicationUser user)
-        {
-            try
-            {
-                _logger.Information("Updating user: {User}", user);
-                _context.Users.Update(user);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating user: {User}", user);
-                throw;
-            }
+            return user;
         }
     }
 }

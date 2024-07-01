@@ -4,11 +4,11 @@ namespace LibraryArchive.Services.Repositories.Interfaces
 {
     public interface IBookRepository
     {
-        Task<Book> GetBookByIdAsync(int bookId);
         Task<IEnumerable<Book>> GetAllBooksAsync();
-        Task<IEnumerable<Book>> GetBooksByUserIdAsync(string userId);
-        Task AddBookAsync(Book book);
-        void RemoveBook(Book book);
-        void UpdateBook(Book book);
+        Task<Book> GetBookByIdAsync(int bookId);
+        Task<Book> AddBookAsync(Book book);
+        Task<Book> UpdateBookAsync(Book book);
+        Task<Book> DeleteBookAsync(int bookId);
+        Task<IEnumerable<Book>> SearchBooksAsync(string searchTerm);
     }
 }

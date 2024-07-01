@@ -1,14 +1,16 @@
 ﻿using LibraryArchive.Data.Context;
+using LibraryArchive.Data.Entities;
+using LibraryArchive.Services.Repositories;
 using LibraryArchive.Services.Repositories.Concrete;
 using LibraryArchive.Services.Repositories.Interfaces;
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace LibraryArchive.Services.Units
 {
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly LibraryArchiveContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public IUserRepository Users { get; private set; }
         public IBookRepository Books { get; private set; }
@@ -19,10 +21,11 @@ namespace LibraryArchive.Services.Units
         public INoteShareRepository NoteShares { get; private set; }
         public IOrderDetailRepository OrderDetails { get; private set; }
 
-        public UnitOfWork(LibraryArchiveContext context)
+        public UnitOfWork(LibraryArchiveContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
-            Users = new UserRepository(_context);
+            _userManager = userManager;
+            Users = new UserRepository(_context, _userManager);
             Books = new BookRepository(_context);
             Notes = new NoteRepository(_context);
             Orders = new OrderRepository(_context);

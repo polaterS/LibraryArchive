@@ -1,9 +1,13 @@
-using LibraryArchive.Data.Context;
-using Microsoft.EntityFrameworkCore;
-using LibraryArchive.Services.Registration;
-using FluentValidation;
 using FluentValidation.AspNetCore;
+using LibraryArchive.Data.Context;
+using LibraryArchive.Data.Entities;
+using LibraryArchive.Services;
+using LibraryArchive.Services.Mapping;
+using LibraryArchive.Services.Registration;
+using LibraryArchive.Services.Services;
 using LibraryArchive.Services.Validation.Order;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryArchive.API
 {
@@ -25,8 +29,21 @@ namespace LibraryArchive.API
             builder.Services.AddDbContext<LibraryArchiveContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("LibraryArchiveConnection")));
 
+            // Register Identity services
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<LibraryArchiveContext>()
+                .AddDefaultTokenProviders();
+
+            // Register AutoMapper
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
+
             // Register services and validators
             builder.Services.AddLibraryArchiveServices();
+
+            // Add UserService to the service collection
+            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<AuthService>();
+            
 
             var app = builder.Build();
 

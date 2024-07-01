@@ -3,8 +3,10 @@
     public class BookShareReadDto
     {
         public int BookShareId { get; set; }
-        public string NoteTitle { get; set; }  // Note'un başlığı
-        public string SharedWithUserName { get; set; }  // Paylaşım yapılan kullanıcının adı
+        public int NoteId { get; set; }
+        public string SharedWithUserId { get; set; }
+        public string NoteTitle { get; set; }
+        public string SharedWithUserName { get; set; }
         public string ShareType { get; set; }
     }
 }
