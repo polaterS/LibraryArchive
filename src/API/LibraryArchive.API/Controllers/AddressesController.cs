@@ -13,10 +13,14 @@ namespace LibraryArchive.API.Controllers
     public class AddressesController : ControllerBase
     {
         private readonly AddressService _addressService;
+        private readonly UserService _userService;
+        private readonly ILogger<BooksController> _logger;
 
-        public AddressesController(AddressService addressService)
+        public AddressesController(AddressService addressService, UserService userService, ILogger<BooksController> logger)
         {
             _addressService = addressService;
+            _userService = userService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -45,7 +49,7 @@ namespace LibraryArchive.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAddressById(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue("CustomUserId");
             var address = await _addressService.GetAddressByIdAsync(userId, id);
             if (address == null)
             {
@@ -66,10 +70,24 @@ namespace LibraryArchive.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddAddress([FromBody] AddressCreateDto addressDto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            addressDto.UserId = userId;
-            var createdAddress = await _addressService.AddAddressAsync(addressDto);
-            return CreatedAtAction(nameof(GetAddressById), new { id = createdAddress.AddressId }, createdAddress);
+            var userId = User.FindFirstValue("CustomUserId"); // CustomUserId'yi kullanarak userId'yi alıyoruz
+            _logger.LogInformation($"UserId: {userId}");
+
+            var user = await _userService.GetUserByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            addressDto.UserId = user.Id;
+            var result = await _addressService.AddAddressAsync(addressDto);
+            if (result == null)
+            {
+                return BadRequest("Failed to add address.");
+            }
+
+            return CreatedAtAction(nameof(GetAddressById), new { id = result.AddressId }, result);
         }
 
         /// <summary>

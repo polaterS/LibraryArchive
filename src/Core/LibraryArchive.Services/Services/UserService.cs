@@ -36,11 +36,18 @@ namespace LibraryArchive.Services
             return (result, null);
         }
 
-        public async Task<UserReadDto> GetUserByIdAsync(string id)
+        public async Task<ApplicationUser> GetUserByIdAsync(string userId)
         {
-            var user = await _userRepository.GetByIdAsync(id);
-            return _mapper.Map<UserReadDto>(user);
+            return await _userManager.FindByIdAsync(userId);
         }
+
+
+        public async Task<ApplicationUser> GetUserByEmailAsync(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
+
 
         public async Task<IEnumerable<UserReadDto>> GetAllUsersAsync()
         {

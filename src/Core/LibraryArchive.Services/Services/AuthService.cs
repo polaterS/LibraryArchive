@@ -111,8 +111,9 @@ namespace LibraryArchive.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Email),
-                new Claim(ClaimTypes.Name, user.UserName)
+                new Claim("CustomUserId", user.Id), // UserId'yi NameIdentifier olarak ekliyoruz
+                new Claim(ClaimTypes.Email, user.Email), // Eposta
+                new Claim(ClaimTypes.Name, user.UserName) // UserName'i Name olarak ekliyoruz
             };
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -130,5 +131,6 @@ namespace LibraryArchive.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 }

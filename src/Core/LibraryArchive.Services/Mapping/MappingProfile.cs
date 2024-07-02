@@ -88,6 +88,10 @@ namespace LibraryArchive.Services.Mapping
                 .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.PostalCode))
                 .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country))
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
+
+            CreateMap<Address, AddressReadDto>();
+            CreateMap<AddressCreateDto, Address>();
+            CreateMap<AddressUpdateDto, Address>();
         }
     }
 }

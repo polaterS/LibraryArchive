@@ -19,10 +19,10 @@ namespace LibraryArchive.Services.Repositories
 
         public async Task<IEnumerable<Address>> GetAddressesByUserIdAsync(string userId)
         {
-            return await _context.Addresses
-                .Where(a => a.UserId == userId)
-                .ToListAsync();
+            return await _context.Addresses.Where(a => a.UserId == userId).ToListAsync();
         }
+
+
 
         public async Task<Address> GetAddressByIdAsync(string userId, int addressId)
         {
