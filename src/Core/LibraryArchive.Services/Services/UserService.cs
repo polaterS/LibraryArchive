@@ -1,5 +1,9 @@
 ﻿using AutoMapper;
 using LibraryArchive.Data.Entities;
+using LibraryArchive.Services.DTOs.Address;
+using LibraryArchive.Services.DTOs.Book;
+using LibraryArchive.Services.DTOs.Note;
+using LibraryArchive.Services.DTOs.Order;
 using LibraryArchive.Services.DTOs.User;
 using LibraryArchive.Services.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -36,10 +40,20 @@ namespace LibraryArchive.Services
             return (result, null);
         }
 
-        public async Task<ApplicationUser> GetUserByIdAsync(string userId)
+        public async Task<UserReadDto> GetUserByIdAsync(string userId)
         {
-            return await _userManager.FindByIdAsync(userId);
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) return null;
+
+            var userDto = _mapper.Map<UserReadDto>(user);
+
+            // Kullanıcı rolleri ekleniyor
+            var roles = await _userManager.GetRolesAsync(user);
+            userDto.Roles = roles;
+
+            return userDto;
         }
+
 
 
         public async Task<ApplicationUser> GetUserByEmailAsync(string email)

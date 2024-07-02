@@ -14,9 +14,9 @@ namespace LibraryArchive.API.Controllers
     {
         private readonly AddressService _addressService;
         private readonly UserService _userService;
-        private readonly ILogger<BooksController> _logger;
+        private readonly ILogger<AddressesController> _logger;
 
-        public AddressesController(AddressService addressService, UserService userService, ILogger<BooksController> logger)
+        public AddressesController(AddressService addressService, UserService userService, ILogger<AddressesController> logger)
         {
             _addressService = addressService;
             _userService = userService;
@@ -32,7 +32,7 @@ namespace LibraryArchive.API.Controllers
         [ProducesResponseType(typeof(IEnumerable<AddressReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAddresses()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue("CustomUserId");
             var addresses = await _addressService.GetAddressesByUserIdAsync(userId);
             return Ok(addresses);
         }
@@ -70,7 +70,7 @@ namespace LibraryArchive.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddAddress([FromBody] AddressCreateDto addressDto)
         {
-            var userId = User.FindFirstValue("CustomUserId"); // CustomUserId'yi kullanarak userId'yi alıyoruz
+            var userId = User.FindFirstValue("CustomUserId");
             _logger.LogInformation($"UserId: {userId}");
 
             var user = await _userService.GetUserByIdAsync(userId);
@@ -80,8 +80,7 @@ namespace LibraryArchive.API.Controllers
                 return NotFound("User not found.");
             }
 
-            addressDto.UserId = user.Id;
-            var result = await _addressService.AddAddressAsync(addressDto);
+            var result = await _addressService.AddAddressAsync(addressDto, user.Id);
             if (result == null)
             {
                 return BadRequest("Failed to add address.");
@@ -105,7 +104,7 @@ namespace LibraryArchive.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateAddress(int id, [FromBody] AddressUpdateDto addressDto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue("CustomUserId");
             if (id != addressDto.AddressId)
             {
                 return BadRequest("Address ID mismatch");
@@ -131,7 +130,7 @@ namespace LibraryArchive.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAddress(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue("CustomUserId");
             var result = await _addressService.DeleteAddressAsync(userId, id);
             if (!result)
             {

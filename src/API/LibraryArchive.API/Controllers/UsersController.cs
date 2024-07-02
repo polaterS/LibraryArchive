@@ -40,12 +40,12 @@ namespace LibraryArchive.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUserById(string id)
         {
-            var user = await _userService.GetUserByIdAsync(id);
-            if (user == null)
+            var userDto = await _userService.GetUserByIdAsync(id);
+            if (userDto == null)
             {
                 return NotFound($"User with ID {id} not found.");
             }
-            return Ok(user);
+            return Ok(userDto);
         }
 
         /// <summary>
@@ -116,4 +116,5 @@ namespace LibraryArchive.API.Controllers
             return BadRequest(result.Errors);
         }
     }
+
 }

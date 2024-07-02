@@ -73,17 +73,15 @@ namespace LibraryArchive.API.Controllers
         {
             try
             {
-                // Kullanıcı email'ini JWT token'dan al
-                var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                Console.WriteLine($"User Email from token: {userEmail}");
-                if (string.IsNullOrEmpty(userEmail))
+                var userId = User.FindFirstValue("CustomUserId");
+                Console.WriteLine($"User Id from token: {userId}");
+                if (string.IsNullOrEmpty(userId))
                 {
-                    Console.WriteLine("User Email is null or empty");
-                    return Unauthorized(new { Message = "Invalid user email." });
+                    Console.WriteLine("User Id is null or empty");
+                    return Unauthorized(new { Message = "Invalid user Id." });
                 }
 
-                // Kullanıcıyı UserManager ile email üzerinden al
-                var user = await _userManager.FindByEmailAsync(userEmail);
+                var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
                     Console.WriteLine("User not found");
@@ -92,7 +90,6 @@ namespace LibraryArchive.API.Controllers
 
                 Console.WriteLine($"User found: {user.UserName}");
 
-                // Kitabı ekle
                 var createdBook = await _bookService.AddBookAsync(bookDto, user.Id);
                 return Ok(createdBook);
             }
@@ -102,9 +99,6 @@ namespace LibraryArchive.API.Controllers
                 return BadRequest(new { Message = ex.Message });
             }
         }
-
-
-
 
 
         /// <summary>

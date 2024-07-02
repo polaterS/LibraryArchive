@@ -9,6 +9,7 @@ using LibraryArchive.Services.DTOs.Category;
 using LibraryArchive.Services.DTOs.Order;
 using LibraryArchive.Services.DTOs.OrderDetail;
 using LibraryArchive.Services.DTOs.Address;
+using LibraryArchive.Services.DTOs.Notification;
 
 namespace LibraryArchive.Services.Mapping
 {
@@ -20,7 +21,12 @@ namespace LibraryArchive.Services.Mapping
             CreateMap<ApplicationUser, UserProfileDto>();
             CreateMap<UserProfileUpdateDto, ApplicationUser>();
             CreateMap<UserCreateDto, ApplicationUser>();
-            CreateMap<ApplicationUser, UserReadDto>();
+            CreateMap<ApplicationUser, UserReadDto>()
+                .ForMember(dest => dest.Roles, opt => opt.Ignore())
+                .ForMember(dest => dest.Books, opt => opt.MapFrom(src => src.Books))
+                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                .ForMember(dest => dest.Orders, opt => opt.MapFrom(src => src.Orders))
+                .ForMember(dest => dest.Addresses, opt => opt.MapFrom(src => src.Addresses));
 
             // Book Mappings
             CreateMap<Book, BookReadDto>()
@@ -79,19 +85,26 @@ namespace LibraryArchive.Services.Mapping
                 .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
                 .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State))
                 .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.PostalCode))
-                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country))
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
+                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country));
             CreateMap<AddressUpdateDto, Address>()
                 .ForMember(dest => dest.Street, opt => opt.MapFrom(src => src.Street))
                 .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
                 .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State))
                 .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.PostalCode))
-                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country))
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
+                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country));
 
             CreateMap<Address, AddressReadDto>();
             CreateMap<AddressCreateDto, Address>();
             CreateMap<AddressUpdateDto, Address>();
+
+            // Diğer mapping'ler
+            CreateMap<Book, BookReadDto>().ReverseMap();
+            CreateMap<Note, NoteReadDto>().ReverseMap();
+            CreateMap<Order, OrderReadDto>().ReverseMap();
+            CreateMap<Address, AddressReadDto>().ReverseMap();
+
+            // NotificationSettings Mappings
+            CreateMap<NotificationSettings, NotificationSettingsDto>().ReverseMap();
         }
     }
 }

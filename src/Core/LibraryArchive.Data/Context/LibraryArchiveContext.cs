@@ -19,6 +19,7 @@ namespace LibraryArchive.Data.Context
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<NoteShare> NoteShares { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<NotificationSettings> NotificationSettings { get; set; } // Eklendi
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -78,11 +79,12 @@ namespace LibraryArchive.Data.Context
                 .WithMany(u => u.Addresses)
                 .HasForeignKey(a => a.UserId);
 
-            // OrderDetail and Address Relationship
-            builder.Entity<OrderDetail>()
-                .HasOne(od => od.Address)
-                .WithMany(a => a.OrderDetails)
-                .HasForeignKey(od => od.AddressId);
+            // NotificationSettings and User Relationship
+            builder.Entity<NotificationSettings>()
+                .HasOne(ns => ns.User)
+                .WithMany(u => u.NotificationSettings)
+                .HasForeignKey(ns => ns.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

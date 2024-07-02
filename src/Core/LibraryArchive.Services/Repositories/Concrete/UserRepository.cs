@@ -19,8 +19,14 @@ namespace LibraryArchive.Services.Repositories
 
         public async Task<ApplicationUser> GetByIdAsync(string id)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return await _context.Users
+                .Include(u => u.Books)
+                .Include(u => u.Notes)
+                .Include(u => u.Orders)
+                .Include(u => u.Addresses)
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
+
 
         public async Task<IEnumerable<ApplicationUser>> GetAllAsync()
         {
