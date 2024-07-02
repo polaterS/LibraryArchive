@@ -7,6 +7,7 @@ namespace LibraryArchive.Data.Entities
         public string? Name { get; set; }
         public string? Surname { get; set; }
         public bool IsActive { get; set; }
+        public string? ProfilePictureUrl { get; set; }
         public virtual ICollection<IdentityUserRole<string>> Roles { get; set; }
         public virtual ICollection<Book> Books { get; set; }
         public virtual ICollection<Note> Notes { get; set; }

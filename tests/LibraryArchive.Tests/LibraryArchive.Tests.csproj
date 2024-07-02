@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <Folder Include="BookShare\" />
-    <Folder Include="Book\" />
     <Folder Include="Category\" />
     <Folder Include="User\" />
     <Folder Include="Order\" />

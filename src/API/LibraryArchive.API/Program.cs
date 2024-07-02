@@ -15,7 +15,6 @@ using Serilog;
 using Serilog.Sinks.MSSqlServer;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Net;
 using System.Reflection;
 using System.Text;
 
@@ -41,7 +40,7 @@ namespace LibraryArchive.API
                                      {
                                          AdditionalColumns = new Collection<SqlColumn>
                                          {
-                                            new SqlColumn("UserName", SqlDbType.NVarChar)
+                                        new SqlColumn("UserName", SqlDbType.NVarChar)
                                          }
                                      })
                 .Enrich.FromLogContext()
@@ -71,7 +70,7 @@ namespace LibraryArchive.API
                 {
                     Title = "LibraryArchive API",
                     Version = "v1",
-                    Description = "Bu proje, adayýn kütüphane arþiv yönetimi, kullanýcý etkileþimi ve e-ticaret özellikleri için kapsamlý bir arka uç sistemi tasarlama ve uygulama becerisini deðerlendirmek üzere tasarlanmýþtýr.",
+                    Description = "Bu proje, kütüphane arþiv yönetimi, kullanýcý etkileþimi ve e-ticaret özellikleri için kapsamlý bir arka uç sistemi kapsamaktadýr.",
                     Contact = new OpenApiContact
                     {
                         Name = "Dev",
@@ -98,9 +97,9 @@ namespace LibraryArchive.API
 
                 c.AddSecurityDefinition("Bearer", securityScheme);
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    { securityScheme, new[] { "Bearer" } }
-                });
+            {
+                { securityScheme, new[] { "Bearer" } }
+            });
 
                 // XML comments configuration
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -113,9 +112,18 @@ namespace LibraryArchive.API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("LibraryArchiveConnection")));
 
             // Configure Identity
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<LibraryArchiveContext>()
-                .AddDefaultTokenProviders();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+            })
+            .AddEntityFrameworkStores<LibraryArchiveContext>()
+            .AddDefaultTokenProviders();
+
 
             // Configure JWT Authentication
             var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -168,47 +176,6 @@ namespace LibraryArchive.API
             app.MapControllers();
 
             app.Run();
-        }
-    }
-
-    // Global exception handling middleware
-    public class GlobalExceptionHandlingMiddleware
-    {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
-
-        public GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlingMiddleware> logger)
-        {
-            _next = next;
-            _logger = logger;
-        }
-
-        public async Task InvokeAsync(HttpContext httpContext)
-        {
-            try
-            {
-                await _next(httpContext);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An unhandled exception has occurred.");
-                await HandleExceptionAsync(httpContext, ex);
-            }
-        }
-
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
-        {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-            var response = new
-            {
-                StatusCode = context.Response.StatusCode,
-                Message = "Internal Server Error. Please try again later.",
-                Detailed = exception.Message
-            };
-
-            return context.Response.WriteAsJsonAsync(response);
         }
     }
 }

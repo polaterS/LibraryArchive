@@ -73,7 +73,6 @@ namespace LibraryArchive.Services.Registration
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 
             // Add UserService to the service collection
-            services.AddScoped<UserManager<ApplicationUser>>();
             services.AddScoped<UserService>();
             services.AddScoped<AuthService>();
             services.AddScoped<BookService>();

@@ -15,9 +15,10 @@ namespace LibraryArchive.Services.Mapping
     {
         public MappingProfile()
         {
+            CreateMap<ApplicationUser, UserProfileDto>();
+            CreateMap<UserProfileUpdateDto, ApplicationUser>();
             CreateMap<UserCreateDto, ApplicationUser>();
             CreateMap<ApplicationUser, UserReadDto>();
-            CreateMap<UserUpdateDto, ApplicationUser>();
 
             CreateMap<Book, BookReadDto>()
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name));
@@ -28,8 +29,9 @@ namespace LibraryArchive.Services.Mapping
             CreateMap<BookShareCreateDto, BookShare>();
             CreateMap<BookShareUpdateDto, BookShare>();
 
+            CreateMap<Book, BookReadDto>().ReverseMap();
             CreateMap<Category, CategoryReadDto>()
-                .ForMember(dest => dest.BooksCount, opt => opt.MapFrom(src => src.Books.Count));
+                .ForMember(dest => dest.Books, opt => opt.MapFrom(src => src.Books));
             CreateMap<CategoryCreateDto, Category>();
             CreateMap<CategoryUpdateDto, Category>();
 

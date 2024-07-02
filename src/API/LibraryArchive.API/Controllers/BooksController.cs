@@ -4,21 +4,24 @@ using LibraryArchive.Services.DTOs.Book;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LibraryArchive.API.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
         private readonly BookService _bookService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<BooksController> _logger;  // Logger ekliyoruz
 
-        public BooksController(BookService bookService, UserManager<ApplicationUser> userManager)
+        public BooksController(BookService bookService, UserManager<ApplicationUser> userManager, ILogger<BooksController> logger)
         {
             _bookService = bookService;
             _userManager = userManager;
+            _logger = logger;
         }
 
         /// <summary>
@@ -70,20 +73,39 @@ namespace LibraryArchive.API.Controllers
         {
             try
             {
-                var user = await _userManager.FindByNameAsync(User.Identity.Name);
-                if (user == null)
+                // Kullanıcı email'ini JWT token'dan al
+                var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                Console.WriteLine($"User Email from token: {userEmail}");
+                if (string.IsNullOrEmpty(userEmail))
                 {
-                    return Unauthorized("Invalid user.");
+                    Console.WriteLine("User Email is null or empty");
+                    return Unauthorized(new { Message = "Invalid user email." });
                 }
 
+                // Kullanıcıyı UserManager ile email üzerinden al
+                var user = await _userManager.FindByEmailAsync(userEmail);
+                if (user == null)
+                {
+                    Console.WriteLine("User not found");
+                    return Unauthorized(new { Message = "Invalid user." });
+                }
+
+                Console.WriteLine($"User found: {user.UserName}");
+
+                // Kitabı ekle
                 var createdBook = await _bookService.AddBookAsync(bookDto, user.Id);
                 return Ok(createdBook);
             }
             catch (System.Exception ex)
             {
-                return BadRequest(ex.Message);
+                Console.WriteLine($"Exception: {ex.Message}");
+                return BadRequest(new { Message = ex.Message });
             }
         }
+
+
+
+
 
         /// <summary>
         /// Belirli bir ID'ye sahip kitabı günceller.
@@ -105,11 +127,13 @@ namespace LibraryArchive.API.Controllers
                 return BadRequest("Book ID mismatch");
             }
 
-            var updatedBook = await _bookService.UpdateBookAsync(bookDto);
-            if (updatedBook == null)
+            var book = await _bookService.GetBookByIdAsync(id);
+            if (book == null)
             {
                 return NotFound($"Book with ID {id} not found.");
             }
+
+            await _bookService.UpdateBookAsync(bookDto);
             return NoContent();
         }
 

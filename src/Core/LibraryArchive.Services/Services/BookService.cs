@@ -33,7 +33,6 @@ namespace LibraryArchive.Services
 
         public async Task<BookReadDto> AddBookAsync(BookCreateDto bookDto, string userId)
         {
-            // Kullanıcı kimliğinin geçerli olup olmadığını kontrol et
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
@@ -50,13 +49,13 @@ namespace LibraryArchive.Services
         public async Task<BookReadDto> UpdateBookAsync(BookUpdateDto bookDto)
         {
             var book = await _bookRepository.GetBookByIdAsync(bookDto.BookId);
-            if (book != null)
+            if (book == null)
             {
-                _mapper.Map(bookDto, book);
-                await _bookRepository.UpdateBookAsync(book);
-                return _mapper.Map<BookReadDto>(book);
+                return null; // Kitap bulunamadıysa null döner
             }
-            return null;
+            _mapper.Map(bookDto, book);
+            await _bookRepository.UpdateBookAsync(book);
+            return _mapper.Map<BookReadDto>(book);
         }
 
         public async Task<bool> DeleteBookAsync(int bookId)

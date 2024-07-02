@@ -44,7 +44,7 @@ namespace LibraryArchive.Services
 
             if (!result.Succeeded)
             {
-                throw new Exception(string.Join("\n", result.Errors));
+                throw new Exception(string.Join("\n", result.Errors.Select(e => e.Description)));
             }
 
             return await GenerateJwtToken(user);
@@ -84,7 +84,7 @@ namespace LibraryArchive.Services
             var result = await _userManager.AddToRoleAsync(user, assignRoleDto.RoleName);
             if (!result.Succeeded)
             {
-                throw new Exception(string.Join("\n", result.Errors));
+                throw new Exception(string.Join("\n", result.Errors.Select(e => e.Description)));
             }
         }
 
@@ -98,7 +98,7 @@ namespace LibraryArchive.Services
             var result = await _roleManager.CreateAsync(new IdentityRole(roleDto.RoleName));
             if (!result.Succeeded)
             {
-                throw new Exception(string.Join("\n", result.Errors));
+                throw new Exception(string.Join("\n", result.Errors.Select(e => e.Description)));
             }
         }
 
@@ -108,12 +108,12 @@ namespace LibraryArchive.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
 
             var claims = new List<Claim>
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Name, user.UserName)
-        };
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Email),
+                new Claim(ClaimTypes.Name, user.UserName)
+            };
 
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
@@ -131,5 +131,4 @@ namespace LibraryArchive.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
-
 }

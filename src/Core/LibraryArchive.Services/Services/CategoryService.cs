@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LibraryArchive.Data.Entities;
+using LibraryArchive.Services.DTOs.Book;
 using LibraryArchive.Services.DTOs.Category;
 using LibraryArchive.Services.Repositories.Interfaces;
 
@@ -19,13 +20,29 @@ namespace LibraryArchive.Services
         public async Task<IEnumerable<CategoryReadDto>> GetAllCategoriesAsync()
         {
             var categories = await _categoryRepository.GetAllCategoriesAsync();
-            return _mapper.Map<IEnumerable<CategoryReadDto>>(categories);
+            var categoryDtos = _mapper.Map<IEnumerable<CategoryReadDto>>(categories);
+
+            foreach (var categoryDto in categoryDtos)
+            {
+                var category = categories.First(c => c.CategoryId == categoryDto.CategoryId);
+                categoryDto.BooksCount = category.Books.Count;
+            }
+
+            return categoryDtos;
         }
 
         public async Task<CategoryReadDto> GetCategoryByIdAsync(int categoryId)
         {
             var category = await _categoryRepository.GetCategoryByIdAsync(categoryId);
-            return category != null ? _mapper.Map<CategoryReadDto>(category) : null;
+            var categoryDto = _mapper.Map<CategoryReadDto>(category);
+
+            if (category != null)
+            {
+                categoryDto.BooksCount = category.Books.Count;
+                categoryDto.Books = _mapper.Map<List<BookReadDto>>(category.Books); // Kitapları ekleme
+            }
+
+            return categoryDto;
         }
 
         public async Task<CategoryReadDto> AddCategoryAsync(CategoryCreateDto categoryDto)

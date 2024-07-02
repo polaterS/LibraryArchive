@@ -3,6 +3,7 @@ using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.User;
 using LibraryArchive.Services.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace LibraryArchive.Services
 {
@@ -11,12 +12,14 @@ namespace LibraryArchive.Services
         private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService(IUserRepository userRepository, UserManager<ApplicationUser> userManager, IMapper mapper)
+        public UserService(IUserRepository userRepository, UserManager<ApplicationUser> userManager, IMapper mapper, ILogger<UserService> logger)
         {
             _userRepository = userRepository;
             _userManager = userManager;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<(IdentityResult, ApplicationUser)> RegisterUserAsync(UserCreateDto userDto)
@@ -78,6 +81,68 @@ namespace LibraryArchive.Services
         {
             var users = await _userRepository.FilterUsersAsync(role, isActive);
             return _mapper.Map<IEnumerable<UserReadDto>>(users);
+        }
+
+        public async Task<UserProfileDto> GetUserProfileAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                _logger.LogError($"User not found with Email {email}");
+                return null;
+            }
+            return _mapper.Map<UserProfileDto>(user);
+        }
+
+        public async Task<bool> UpdateUserProfileAsync(string email, UserProfileUpdateDto userProfileUpdateDto)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                _logger.LogError($"User not found with Email {email}");
+                return false;
+            }
+
+            user.Name = userProfileUpdateDto.Name;
+            user.Surname = userProfileUpdateDto.Surname;
+            user.ProfilePictureUrl = userProfileUpdateDto.ProfilePictureUrl;
+
+            var result = await _userManager.UpdateAsync(user);
+            return result.Succeeded;
+        }
+
+        public async Task<bool> UpdateUserEmailAsync(string email, UserEmailUpdateDto userEmailUpdateDto)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                _logger.LogError($"User not found with Email {email}");
+                return false;
+            }
+
+            var passwordCheck = await _userManager.CheckPasswordAsync(user, userEmailUpdateDto.CurrentPassword);
+            if (!passwordCheck)
+            {
+                _logger.LogError($"Incorrect current password for user with Email {email}");
+                return false;
+            }
+
+            user.Email = userEmailUpdateDto.Email;
+            var result = await _userManager.UpdateAsync(user);
+            return result.Succeeded;
+        }
+
+        public async Task<IdentityResult> UpdateUserPasswordAsync(string email, UserPasswordUpdateDto userPasswordUpdateDto)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                _logger.LogError($"User not found with Email {email}");
+                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, userPasswordUpdateDto.CurrentPassword, userPasswordUpdateDto.NewPassword);
+            return result;
         }
     }
 }

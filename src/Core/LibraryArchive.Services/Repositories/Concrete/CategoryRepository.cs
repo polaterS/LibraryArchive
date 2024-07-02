@@ -16,12 +16,16 @@ namespace LibraryArchive.Services.Repositories
 
         public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories
+            .Include(c => c.Books)
+            .ToListAsync();
         }
 
         public async Task<Category> GetCategoryByIdAsync(int categoryId)
         {
-            return await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId == categoryId);
+            return await _context.Categories
+            .Include(c => c.Books)
+            .FirstOrDefaultAsync(c => c.CategoryId == categoryId);
         }
 
         public async Task<Category> AddCategoryAsync(Category category)
