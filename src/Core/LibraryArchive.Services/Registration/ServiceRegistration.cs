@@ -71,6 +71,7 @@ namespace LibraryArchive.Services.Registration
             services.AddScoped<INoteShareRepository, NoteShareRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+            services.AddScoped<IAddressRepository, AddressRepository>();
 
             // Add UserService to the service collection
             services.AddScoped<UserService>();
@@ -82,6 +83,7 @@ namespace LibraryArchive.Services.Registration
             services.AddScoped<NoteShareService>();
             services.AddScoped<OrderService>();
             services.AddScoped<OrderDetailService>();
+            services.AddScoped<AddressService>();
         }
     }
 }

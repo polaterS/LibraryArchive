@@ -9,5 +9,7 @@
         public decimal Price { get; set; }
         public virtual Book Book { get; set; }
         public virtual Order Order { get; set; }
+        public int AddressId { get; set; }
+        public virtual Address Address { get; set; }
     }
 }

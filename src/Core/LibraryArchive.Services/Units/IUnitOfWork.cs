@@ -12,6 +12,8 @@ namespace LibraryArchive.Services.Units
         ICategoryRepository Categories { get; }
         INoteShareRepository NoteShares { get; }
         IOrderDetailRepository OrderDetails { get; }
+        IAddressRepository Addresses { get; }
+
 
         Task<int> CompleteAsync();  // Asenkron değişiklikleri kaydetmek için
         int Complete();  // Senkron değişiklikleri kaydetmek için

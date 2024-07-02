@@ -18,6 +18,7 @@ namespace LibraryArchive.Data.Context
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<NoteShare> NoteShares { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -70,6 +71,18 @@ namespace LibraryArchive.Data.Context
             builder.Entity<OrderDetail>()
                 .Property(od => od.Price)
                 .HasColumnType("decimal(18, 2)");
+
+            // User and Address Relationship
+            builder.Entity<Address>()
+                .HasOne(a => a.User)
+                .WithMany(u => u.Addresses)
+                .HasForeignKey(a => a.UserId);
+
+            // OrderDetail and Address Relationship
+            builder.Entity<OrderDetail>()
+                .HasOne(od => od.Address)
+                .WithMany(a => a.OrderDetails)
+                .HasForeignKey(od => od.AddressId);
         }
     }
 }
