@@ -3,8 +3,8 @@
     public class OrderDetailReadDto
     {
         public int OrderDetailId { get; set; }
-        public int BookId { get; set; }  // Kitabın ID'si
-        public string BookTitle { get; set; }  // Satın alınan kitabın başlığı
+        public int BookId { get; set; }
+        public string BookTitle { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }
     }

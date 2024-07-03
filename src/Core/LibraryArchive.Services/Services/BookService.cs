@@ -74,7 +74,7 @@ namespace LibraryArchive.Services
             var book = await _bookRepository.GetBookByIdAsync(bookDto.BookId);
             if (book == null)
             {
-                return null; // Kitap bulunamadıysa null döner
+                return null; 
             }
             _mapper.Map(bookDto, book);
             await _bookRepository.UpdateBookAsync(book);

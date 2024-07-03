@@ -47,7 +47,6 @@ namespace LibraryArchive.Services
 
             var userDto = _mapper.Map<UserReadDto>(user);
 
-            // Kullanıcı rolleri ekleniyor
             var roles = await _userManager.GetRolesAsync(user);
             userDto.Roles = roles;
 

@@ -20,19 +20,19 @@ namespace LibraryArchive.Data.Context
         public DbSet<NoteShare> NoteShares { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<NotificationSettings> NotificationSettings { get; set; }
-        public DbSet<Notification> Notifications { get; set; } // Eklendi
+        public DbSet<Notification> Notifications { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Category and Book Relationship
+            // Kategori ve Kitap İlişkisi
             builder.Entity<Book>()
                 .HasOne(b => b.Category)
                 .WithMany(c => c.Books)
                 .HasForeignKey(b => b.CategoryId);
 
-            // User and Book/Note Relationships
+            // Kullanıcı ve Kitap/Not İlişkileri
             builder.Entity<Book>()
                 .HasOne(b => b.User)
                 .WithMany(u => u.Books)
@@ -50,13 +50,13 @@ namespace LibraryArchive.Data.Context
                 .HasForeignKey(n => n.BookId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // User and Order Relationship
+            // Kullanıcı ve Sipariş İlişkisi
             builder.Entity<ApplicationUser>()
                 .HasMany(u => u.Orders)
                 .WithOne(o => o.User)
                 .HasForeignKey(o => o.UserId);
 
-            // Order and OrderDetail Relationship
+            // Sipariş ve Sipariş Detayı İlişkisi
             builder.Entity<Order>()
                 .HasMany(o => o.OrderDetails)
                 .WithOne(od => od.Order)
@@ -69,46 +69,46 @@ namespace LibraryArchive.Data.Context
                 .HasForeignKey(od => od.BookId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Configuring the precision for decimal type in OrderDetail
+            // Sipariş Detayında ondalık tür için hassasiyet yapılandırması
             builder.Entity<OrderDetail>()
                 .Property(od => od.Price)
                 .HasColumnType("decimal(18, 2)");
 
-            // User and Address Relationship
+            // Kullanıcı ve Adres İlişkisi
             builder.Entity<Address>()
                 .HasOne(a => a.User)
                 .WithMany(u => u.Addresses)
                 .HasForeignKey(a => a.UserId);
 
-            // NotificationSettings and User Relationship
+            // Bildirim Ayarları ve Kullanıcı İlişkisi
             builder.Entity<NotificationSettings>()
                 .HasOne(ns => ns.User)
                 .WithMany(u => u.NotificationSettings)
                 .HasForeignKey(ns => ns.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Notification and User Relationship
+            // Bildirim ve Kullanıcı İlişkisi
             builder.Entity<Notification>()
                 .HasOne(n => n.User)
                 .WithMany(u => u.Notifications)
                 .HasForeignKey(n => n.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Optional: Notification and Book Relationship (if notifications are related to specific books)
+            // Bildirim ve Kitap İlişkisi (bildirimler belirli kitaplarla ilişkiliyse)
             builder.Entity<Notification>()
                 .HasOne(n => n.Book)
                 .WithMany(b => b.Notifications)
                 .HasForeignKey(n => n.BookId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Optional: Notification and Note Relationship (if notifications are related to specific notes)
+            // Bildirim ve Not İlişkisi (bildirimler belirli notlarla ilişkiliyse)
             builder.Entity<Notification>()
                 .HasOne(n => n.Note)
                 .WithMany(n => n.Notifications)
                 .HasForeignKey(n => n.NoteId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Optional: Notification and Order Relationship (if notifications are related to specific orders)
+            // Bildirim ve Sipariş İlişkisi (bildirimler belirli siparişlerle ilişkiliyse)
             builder.Entity<Notification>()
                 .HasOne(n => n.Order)
                 .WithMany(o => o.Notifications)

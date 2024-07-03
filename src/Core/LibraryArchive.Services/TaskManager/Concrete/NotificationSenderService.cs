@@ -60,21 +60,21 @@ namespace LibraryArchive.Services.TaskManager.Concrete
 
         private Task SendEmailNotification(Notification notification)
         {
-            // Email gönderme işlemi burada yapılacak.
+            // Email gönderme işlemi
             _logger.LogInformation($"Email notification sent to {notification.UserId} with message: {notification.Message}");
             return Task.CompletedTask;
         }
 
         private Task SendSmsNotification(Notification notification)
         {
-            // SMS gönderme işlemi burada yapılacak.
+            // SMS gönderme işlemi
             _logger.LogInformation($"SMS notification sent to {notification.UserId} with message: {notification.Message}");
             return Task.CompletedTask;
         }
 
         private Task SendPushNotification(Notification notification)
         {
-            // Push bildirim gönderme işlemi burada yapılacak.
+            // Push bildirim gönderme
             _logger.LogInformation($"Push notification sent to {notification.UserId} with message: {notification.Message}");
             return Task.CompletedTask;
         }

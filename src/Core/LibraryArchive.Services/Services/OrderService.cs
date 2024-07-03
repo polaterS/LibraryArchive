@@ -48,7 +48,6 @@ namespace LibraryArchive.Services
 
         public async Task<OrderReadDto> AddOrderAsync(OrderCreateDto orderDto, string userId)
         {
-            // Yeni adresi ekle
             var address = new Address
             {
                 UserId = userId,
@@ -62,7 +61,6 @@ namespace LibraryArchive.Services
 
             await _addressRepository.AddAddressAsync(address);
 
-            // Yeni siparişi oluştur
             var order = new Order
             {
                 UserId = userId,
@@ -70,7 +68,6 @@ namespace LibraryArchive.Services
                 OrderDetails = new List<OrderDetail>()
             };
 
-            // OrderDetails'i ekle
             foreach (var orderDetailDto in orderDto.OrderDetails)
             {
                 var orderDetail = new OrderDetail
@@ -78,7 +75,7 @@ namespace LibraryArchive.Services
                     BookId = orderDetailDto.BookId,
                     Quantity = orderDetailDto.Quantity,
                     Price = orderDetailDto.Price,
-                    AddressId = address.AddressId // AddressId burada kullanılıyor
+                    AddressId = address.AddressId 
                 };
                 order.OrderDetails.Add(orderDetail);
             }

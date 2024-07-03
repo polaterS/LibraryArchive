@@ -10,7 +10,6 @@ namespace LibraryArchive.Data.Entities
         public string Message { get; set; }
         public DateTime Date { get; set; }
         public string NotificationType { get; set; } // Email, SMS, PushNotification gibi
-
         public virtual ApplicationUser User { get; set; }
         public int? BookId { get; set; }
         public virtual Book Book { get; set; }

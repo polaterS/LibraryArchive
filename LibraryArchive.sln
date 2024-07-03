@@ -14,6 +14,22 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3CD14E4C-3095-4CC4-B5BB-A5849E89BF6C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{D009C1EA-89D6-4EB0-BDEF-8659B9DE7704}"
+	ProjectSection(SolutionItems) = preProject
+		Address_Management.md = Address_Management.md
+		API_Docs.md = API_Docs.md
+		Auth_Management.md = Auth_Management.md
+		BookShare_Management.md = BookShare_Management.md
+		Book_Management.md = Book_Management.md
+		Category_Management.md = Category_Management.md
+		NoteShare_Management.md = NoteShare_Management.md
+		Note_Management.md = Note_Management.md
+		NotificationSettings_Management.md = NotificationSettings_Management.md
+		Notification_Management.md = Notification_Management.md
+		OrderDetail_Management.md = OrderDetail_Management.md
+		Order_Management.md = Order_Management.md
+		Profile_Management.md = Profile_Management.md
+		User_Management.md = User_Management.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{67A7F35A-8211-4C44-B26A-905C63637778}"
 EndProject

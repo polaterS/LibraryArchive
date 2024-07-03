@@ -6,7 +6,7 @@ namespace LibraryArchive.Services.DTOs.Category
     {
         public int CategoryId { get; set; }
         public string Name { get; set; }
-        public int BooksCount { get; set; }  // Kategoriye ait kitapların sayısı
+        public int BooksCount { get; set; }
         public List<BookReadDto> Books { get; set; }
     }
 }

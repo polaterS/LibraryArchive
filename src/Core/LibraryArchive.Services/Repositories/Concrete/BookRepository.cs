@@ -17,14 +17,14 @@ namespace LibraryArchive.Services.Repositories
         public async Task<IEnumerable<Book>> GetAllBooksAsync()
         {
             return await _context.Books
-                .Include(b => b.Category) // Kategori bilgisini de çeker
+                .Include(b => b.Category)
                 .ToListAsync();
         }
 
         public async Task<Book> GetBookByIdAsync(int bookId)
         {
             return await _context.Books
-                .Include(b => b.Category) // Kategori bilgisini de çeker
+                .Include(b => b.Category) 
                 .FirstOrDefaultAsync(b => b.BookId == bookId);
         }
 
@@ -56,7 +56,7 @@ namespace LibraryArchive.Services.Repositories
         {
             return await _context.Books
                 .Where(b => b.Title.Contains(searchTerm) || b.Author.Contains(searchTerm) || b.ISBN.Contains(searchTerm))
-                .Include(b => b.Category) // Kategori bilgisini de çeker
+                .Include(b => b.Category) 
                 .ToListAsync();
         }
     }

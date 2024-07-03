@@ -26,7 +26,7 @@ namespace LibraryArchive.API.Controllers
         /// <response code="404">Kullanıcı bulunamadı</response>
         [Authorize(Roles = "Admin, User")]
         [HttpGet]
-        [ProducesResponseType(typeof(UserProfileReadDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserProfileDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProfile()
         {

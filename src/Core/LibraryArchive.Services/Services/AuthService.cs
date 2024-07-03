@@ -111,9 +111,9 @@ namespace LibraryArchive.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("CustomUserId", user.Id), // UserId'yi NameIdentifier olarak ekliyoruz
-                new Claim(ClaimTypes.Email, user.Email), // Eposta
-                new Claim(ClaimTypes.Name, user.UserName) // UserName'i Name olarak ekliyoruz
+                new Claim("CustomUserId", user.Id), 
+                new Claim(ClaimTypes.Email, user.Email), 
+                new Claim(ClaimTypes.Name, user.UserName) 
             };
 
             var roles = await _userManager.GetRolesAsync(user);

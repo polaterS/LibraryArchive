@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Address\" />
     <Folder Include="BookShare\" />
     <Folder Include="Category\" />
     <Folder Include="User\" />

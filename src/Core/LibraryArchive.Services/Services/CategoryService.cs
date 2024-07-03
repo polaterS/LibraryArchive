@@ -39,7 +39,7 @@ namespace LibraryArchive.Services
             if (category != null)
             {
                 categoryDto.BooksCount = category.Books.Count;
-                categoryDto.Books = _mapper.Map<List<BookReadDto>>(category.Books); // Kitapları ekleme
+                categoryDto.Books = _mapper.Map<List<BookReadDto>>(category.Books);
             }
 
             return categoryDto;
