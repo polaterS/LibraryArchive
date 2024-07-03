@@ -73,35 +73,9 @@ namespace LibraryArchive.Services.Mapping
             CreateMap<OrderDetailUpdateDto, OrderDetail>();
 
             // Address Mappings
-            CreateMap<Address, AddressReadDto>()
-                .ForMember(dest => dest.Street, opt => opt.MapFrom(src => src.Street))
-                .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
-                .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State))
-                .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.PostalCode))
-                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country))
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
-            CreateMap<AddressCreateDto, Address>()
-                .ForMember(dest => dest.Street, opt => opt.MapFrom(src => src.Street))
-                .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
-                .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State))
-                .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.PostalCode))
-                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country));
-            CreateMap<AddressUpdateDto, Address>()
-                .ForMember(dest => dest.Street, opt => opt.MapFrom(src => src.Street))
-                .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
-                .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State))
-                .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.PostalCode))
-                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country));
-
             CreateMap<Address, AddressReadDto>();
             CreateMap<AddressCreateDto, Address>();
             CreateMap<AddressUpdateDto, Address>();
-
-            // Diğer mapping'ler
-            CreateMap<Book, BookReadDto>().ReverseMap();
-            CreateMap<Note, NoteReadDto>().ReverseMap();
-            CreateMap<Order, OrderReadDto>().ReverseMap();
-            CreateMap<Address, AddressReadDto>().ReverseMap();
 
             // Notification Mappings
             CreateMap<Notification, NotificationReadDto>();

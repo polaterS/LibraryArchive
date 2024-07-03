@@ -13,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{606F18CC-8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3CD14E4C-3095-4CC4-B5BB-A5849E89BF6C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{67A7F35A-8211-4C44-B26A-905C63637778}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Tests", "tests\LibraryArchive.Tests\LibraryArchive.Tests.csproj", "{5ACB96B8-FC14-4854-8629-AE0DD065EE1E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Data", "src\Core\LibraryArchive.Data\LibraryArchive.Data.csproj", "{9FA5F680-75D7-4CC5-8BC2-257097B2E2B2}"

@@ -148,9 +148,12 @@ namespace LibraryArchive.Services
             }
 
             user.Email = userEmailUpdateDto.Email;
+            user.UserName = userEmailUpdateDto.Email;
+
             var result = await _userManager.UpdateAsync(user);
             return result.Succeeded;
         }
+
 
         public async Task<IdentityResult> UpdateUserPasswordAsync(string email, UserPasswordUpdateDto userPasswordUpdateDto)
         {

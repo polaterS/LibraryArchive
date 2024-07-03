@@ -73,9 +73,9 @@ namespace LibraryArchive.API
                     Description = "Bu proje, kütüphane arþiv yönetimi, kullanýcý etkileþimi ve e-ticaret özellikleri için kapsamlý bir arka uç sistemi kapsamaktadýr.",
                     Contact = new OpenApiContact
                     {
-                        Name = "Dev",
-                        Email = "dev@gmail.com",
-                        Url = new Uri("https://example.com")
+                        Name = "LibraryArchive Admin",
+                        Email = "libraryrchive@info.com",
+                        Url = new Uri("https://api.libraryArchive.com")
                     }
                 });
 
