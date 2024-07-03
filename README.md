@@ -2,7 +2,7 @@
 
 ## Giriş
 
-[İçindekiler](documents/API_Docs.md)
+[İçindekiler](API_Docs.md)
 
 Kütüphane Arşiv ve Satış Platformu'na hoş geldiniz! Bu proje, kullanıcıların kitap koleksiyonlarını yönetmelerine, not almalarına ve siparişleri yönetmelerine yardımcı olmak için tasarlanmıştır. Aşağıda, platformun çeşitli modülleri için detaylı API dokümantasyonunu bulabilirsiniz.
 
@@ -24,55 +24,55 @@ Kütüphane Arşiv ve Satış Platformu'na hoş geldiniz! Bu proje, kullanıcıl
 
 ## Kimlik Yönetimi
 
-Kimlik doğrulama süreçleri hakkında detaylı bilgiye [Kimlik Yönetimi Dokümantasyonu](docs/auth_management.md) üzerinden ulaşabilirsiniz.
+Kimlik doğrulama süreçleri hakkında detaylı bilgiye [Kimlik Yönetimi Dokümantasyonu](auth_management.md) üzerinden ulaşabilirsiniz.
 
 ## Kullanıcı Yönetimi
 
-Kullanıcıların yönetimi hakkında daha fazla bilgi almak için [Kullanıcı Yönetimi Dokümantasyonu](docs/user_management.md) adresini ziyaret edin.
+Kullanıcıların yönetimi hakkında daha fazla bilgi almak için [Kullanıcı Yönetimi Dokümantasyonu](user_management.md) adresini ziyaret edin.
 
 ## Profil Yönetimi
 
-Profil ayarları hakkında detaylı bilgi için [Profil Yönetimi Dokümantasyonu](docs/profile_management.md) sayfasını inceleyebilirsiniz.
+Profil ayarları hakkında detaylı bilgi için [Profil Yönetimi Dokümantasyonu](profile_management.md) sayfasını inceleyebilirsiniz.
 
 ## Adres Yönetimi
 
-Kullanıcı adreslerini yönetme hakkında bilgiye [Adres Yönetimi Dokümantasyonu](docs/address_management.md) üzerinden ulaşabilirsiniz.
+Kullanıcı adreslerini yönetme hakkında bilgiye [Adres Yönetimi Dokümantasyonu](address_management.md) üzerinden ulaşabilirsiniz.
 
 ## Kitap Yönetimi
 
-Kitap yönetimi hakkında kapsamlı bilgi için [Kitap Yönetimi Dokümantasyonu](docs/book_management.md) sayfasına bakabilirsiniz.
+Kitap yönetimi hakkında kapsamlı bilgi için [Kitap Yönetimi Dokümantasyonu](book_management.md) sayfasına bakabilirsiniz.
 
 ## Kitap Paylaşım Yönetimi
 
-Kitap paylaşımı hakkında bilgi almak için [Kitap Paylaşım Yönetimi Dokümantasyonu](docs/bookshare_management.md) sayfasını ziyaret edin.
+Kitap paylaşımı hakkında bilgi almak için [Kitap Paylaşım Yönetimi Dokümantasyonu](bookshare_management.md) sayfasını ziyaret edin.
 
 ## Kategori Yönetimi
 
-Kategori yönetimi hakkında detaylı bilgiye [Kategori Yönetimi Dokümantasyonu](docs/category_management.md) üzerinden ulaşabilirsiniz.
+Kategori yönetimi hakkında detaylı bilgiye [Kategori Yönetimi Dokümantasyonu](category_management.md) üzerinden ulaşabilirsiniz.
 
 ## Not Yönetimi
 
-Notları yönetme hakkında detaylı bilgi için [Not Yönetimi Dokümantasyonu](docs/note_management.md) sayfasını inceleyin.
+Notları yönetme hakkında detaylı bilgi için [Not Yönetimi Dokümantasyonu](note_management.md) sayfasını inceleyin.
 
 ## Not Paylaşım Yönetimi
 
-Not paylaşımı hakkında bilgi almak için [Not Paylaşım Yönetimi Dokümantasyonu](docs/noteshare_management.md) sayfasını ziyaret edin.
+Not paylaşımı hakkında bilgi almak için [Not Paylaşım Yönetimi Dokümantasyonu](noteshare_management.md) sayfasını ziyaret edin.
 
 ## Sipariş Yönetimi
 
-Sipariş yönetimi hakkında kapsamlı bilgi için [Sipariş Yönetimi Dokümantasyonu](docs/order_management.md) sayfasına bakabilirsiniz.
+Sipariş yönetimi hakkında kapsamlı bilgi için [Sipariş Yönetimi Dokümantasyonu](order_management.md) sayfasına bakabilirsiniz.
 
 ## Sipariş Detay Yönetimi
 
-Sipariş detaylarını yönetme hakkında bilgiye [Sipariş Detay Yönetimi Dokümantasyonu](docs/orderdetail_management.md) üzerinden ulaşabilirsiniz.
+Sipariş detaylarını yönetme hakkında bilgiye [Sipariş Detay Yönetimi Dokümantasyonu](orderdetail_management.md) üzerinden ulaşabilirsiniz.
 
 ## Bildirim Yönetimi
 
-Bildirim yönetimi hakkında bilgi almak için [Bildirim Yönetimi Dokümantasyonu](docs/notification_management.md) sayfasını ziyaret edin.
+Bildirim yönetimi hakkında bilgi almak için [Bildirim Yönetimi Dokümantasyonu](notification_management.md) sayfasını ziyaret edin.
 
 ## Bildirim Ayarları Yönetimi
 
-Bildirim ayarları hakkında detaylı bilgi için [Bildirim Ayarları Yönetimi Dokümantasyonu](docs/notificationsettings_management.md) sayfasını inceleyin.
+Bildirim ayarları hakkında detaylı bilgi için [Bildirim Ayarları Yönetimi Dokümantasyonu](notificationsettings_management.md) sayfasını inceleyin.
 
 
 
