@@ -2,7 +2,7 @@
 
 ## Giriş
 
-[İçindekiler](docs/API_Docs.md)
+[İçindekiler](documents/API_Docs.md)
 
 Kütüphane Arşiv ve Satış Platformu'na hoş geldiniz! Bu proje, kullanıcıların kitap koleksiyonlarını yönetmelerine, not almalarına ve siparişleri yönetmelerine yardımcı olmak için tasarlanmıştır. Aşağıda, platformun çeşitli modülleri için detaylı API dokümantasyonunu bulabilirsiniz.
 
