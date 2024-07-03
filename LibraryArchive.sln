@@ -13,7 +13,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{606F18CC-8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3CD14E4C-3095-4CC4-B5BB-A5849E89BF6C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{D009C1EA-89D6-4EB0-BDEF-8659B9DE7704}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{67A7F35A-8211-4C44-B26A-905C63637778}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Tests", "tests\LibraryArchive.Tests\LibraryArchive.Tests.csproj", "{5ACB96B8-FC14-4854-8629-AE0DD065EE1E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Data", "src\Core\LibraryArchive.Data\LibraryArchive.Data.csproj", "{9FA5F680-75D7-4CC5-8BC2-257097B2E2B2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Services", "src\Core\LibraryArchive.Services\LibraryArchive.Services.csproj", "{628B3A7F-4A4C-4FBB-94CD-0B548A11EBBC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{7F9308E4-75A4-4B9B-A847-3237BA1B5BC6}"
 	ProjectSection(SolutionItems) = preProject
 		Address_Management.md = Address_Management.md
 		API_Docs.md = API_Docs.md
@@ -30,14 +38,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{D009C1EA-8
 		Profile_Management.md = Profile_Management.md
 		User_Management.md = User_Management.md
 	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{67A7F35A-8211-4C44-B26A-905C63637778}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Tests", "tests\LibraryArchive.Tests\LibraryArchive.Tests.csproj", "{5ACB96B8-FC14-4854-8629-AE0DD065EE1E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Data", "src\Core\LibraryArchive.Data\LibraryArchive.Data.csproj", "{9FA5F680-75D7-4CC5-8BC2-257097B2E2B2}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Services", "src\Core\LibraryArchive.Services\LibraryArchive.Services.csproj", "{628B3A7F-4A4C-4FBB-94CD-0B548A11EBBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
