@@ -24,7 +24,7 @@ Kütüphane Arşiv ve Satış Platformu'na hoş geldiniz! Bu proje, kullanıcıl
 
 ## Kimlik Yönetimi
 
-Kimlik doğrulama süreçleri hakkında detaylı bilgiye [Kimlik Yönetimi Dokümantasyonu](docs/auth_management.md) üzerinden ulaşabilirsiniz.
+Kimlik doğrulama süreçleri hakkında detaylı bilgiye [Kimlik Yönetimi Dokümantasyonu](docs/Auth_Management.md) üzerinden ulaşabilirsiniz.
 
 ## Kullanıcı Yönetimi
 
