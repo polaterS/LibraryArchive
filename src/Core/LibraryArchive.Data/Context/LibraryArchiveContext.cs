@@ -19,7 +19,8 @@ namespace LibraryArchive.Data.Context
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<NoteShare> NoteShares { get; set; }
         public DbSet<Address> Addresses { get; set; }
-        public DbSet<NotificationSettings> NotificationSettings { get; set; } // Eklendi
+        public DbSet<NotificationSettings> NotificationSettings { get; set; }
+        public DbSet<Notification> Notifications { get; set; } // Eklendi
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -41,13 +42,13 @@ namespace LibraryArchive.Data.Context
                 .HasOne(n => n.User)
                 .WithMany(u => u.Notes)
                 .HasForeignKey(n => n.UserId)
-                .OnDelete(DeleteBehavior.NoAction); // Prevent cascade delete
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Note>()
                 .HasOne(n => n.Book)
                 .WithMany(b => b.Notes)
                 .HasForeignKey(n => n.BookId)
-                .OnDelete(DeleteBehavior.NoAction); // Prevent cascade delete
+                .OnDelete(DeleteBehavior.NoAction);
 
             // User and Order Relationship
             builder.Entity<ApplicationUser>()
@@ -60,13 +61,13 @@ namespace LibraryArchive.Data.Context
                 .HasMany(o => o.OrderDetails)
                 .WithOne(od => od.Order)
                 .HasForeignKey(od => od.OrderId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete on Orders
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<OrderDetail>()
                 .HasOne(od => od.Book)
                 .WithMany(b => b.OrderDetails)
                 .HasForeignKey(od => od.BookId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete on Books
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Configuring the precision for decimal type in OrderDetail
             builder.Entity<OrderDetail>()
@@ -85,6 +86,34 @@ namespace LibraryArchive.Data.Context
                 .WithMany(u => u.NotificationSettings)
                 .HasForeignKey(ns => ns.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Notification and User Relationship
+            builder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Optional: Notification and Book Relationship (if notifications are related to specific books)
+            builder.Entity<Notification>()
+                .HasOne(n => n.Book)
+                .WithMany(b => b.Notifications)
+                .HasForeignKey(n => n.BookId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Optional: Notification and Note Relationship (if notifications are related to specific notes)
+            builder.Entity<Notification>()
+                .HasOne(n => n.Note)
+                .WithMany(n => n.Notifications)
+                .HasForeignKey(n => n.NoteId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Optional: Notification and Order Relationship (if notifications are related to specific orders)
+            builder.Entity<Notification>()
+                .HasOne(n => n.Order)
+                .WithMany(o => o.Notifications)
+                .HasForeignKey(n => n.OrderId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace LibraryArchive.Services.Repositories.Interfaces
         Task<IEnumerable<Address>> GetAddressesByUserIdAsync(string userId);
         Task<Address> GetAddressByIdAsync(string userId, int addressId);
         Task<Address> AddAddressAsync(Address address);
-        Task UpdateAddressAsync(Address address);
-        Task DeleteAddressAsync(int addressId);
+        System.Threading.Tasks.Task UpdateAddressAsync(Address address);
+        System.Threading.Tasks.Task DeleteAddressAsync(int addressId);
     }
 }

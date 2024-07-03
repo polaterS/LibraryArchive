@@ -37,13 +37,13 @@ namespace LibraryArchive.Services.Repositories
             return address;
         }
 
-        public async Task UpdateAddressAsync(Address address)
+        public async System.Threading.Tasks.Task UpdateAddressAsync(Address address)
         {
             _context.Addresses.Update(address);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAddressAsync(int addressId)
+        public async System.Threading.Tasks.Task DeleteAddressAsync(int addressId)
         {
             var address = await _context.Addresses.FindAsync(addressId);
             if (address != null)

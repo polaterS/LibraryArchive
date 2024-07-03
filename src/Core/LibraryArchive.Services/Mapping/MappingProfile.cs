@@ -103,8 +103,15 @@ namespace LibraryArchive.Services.Mapping
             CreateMap<Order, OrderReadDto>().ReverseMap();
             CreateMap<Address, AddressReadDto>().ReverseMap();
 
+            // Notification Mappings
+            CreateMap<Notification, NotificationReadDto>();
+            CreateMap<NotificationCreateDto, Notification>();
+            CreateMap<NotificationUpdateDto, Notification>();
+
             // NotificationSettings Mappings
             CreateMap<NotificationSettings, NotificationSettingsDto>().ReverseMap();
+            CreateMap<NotificationSettingsCreateDto, NotificationSettings>().ReverseMap();
+            CreateMap<NotificationSettingsUpdateDto, NotificationSettings>().ReverseMap();
         }
     }
 }

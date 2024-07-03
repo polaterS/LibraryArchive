@@ -9,7 +9,10 @@ using LibraryArchive.Services.DTOs.Order;
 using LibraryArchive.Services.DTOs.OrderDetail;
 using LibraryArchive.Services.DTOs.User;
 using LibraryArchive.Services.Repositories;
+using LibraryArchive.Services.Repositories.Concrete;
 using LibraryArchive.Services.Repositories.Interfaces;
+using LibraryArchive.Services.TaskManager.Concrete;
+using LibraryArchive.Services.TaskManager.Interfaces;
 using LibraryArchive.Services.Units;
 using LibraryArchive.Services.Validation.Book;
 using LibraryArchive.Services.Validation.BookShare;
@@ -72,6 +75,9 @@ namespace LibraryArchive.Services.Registration
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
             services.AddScoped<IAddressRepository, AddressRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<INotificationSettingsRepository, NotificationSettingsRepository>();
+            services.AddScoped<INotificationSenderService, NotificationSenderService>();
 
             // Add UserService to the service collection
             services.AddScoped<UserService>();
@@ -84,6 +90,8 @@ namespace LibraryArchive.Services.Registration
             services.AddScoped<OrderService>();
             services.AddScoped<OrderDetailService>();
             services.AddScoped<AddressService>();
+            services.AddScoped<NotificationService>();
+            services.AddScoped<NotificationSettingsService>();
         }
     }
 }

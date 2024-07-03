@@ -7,5 +7,6 @@
         public DateTime OrderDate { get; set; }
         public virtual ApplicationUser User { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
     }
 }

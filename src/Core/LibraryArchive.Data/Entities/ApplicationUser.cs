@@ -14,5 +14,6 @@ namespace LibraryArchive.Data.Entities
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<Address> Addresses { get; set; }
         public virtual ICollection<NotificationSettings> NotificationSettings { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
     }
 }

@@ -10,5 +10,6 @@
         public virtual ApplicationUser User { get; set; }
         public virtual Book Book { get; set; }
         public virtual ICollection<NoteShare> NoteShares { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
     }
 }

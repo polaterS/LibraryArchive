@@ -68,7 +68,7 @@ namespace LibraryArchive.Services
             return await GenerateJwtToken(user);
         }
 
-        public virtual async Task AssignRoleAsync(AssignRoleDto assignRoleDto)
+        public virtual async System.Threading.Tasks.Task AssignRoleAsync(AssignRoleDto assignRoleDto)
         {
             var user = await _userManager.FindByEmailAsync(assignRoleDto.Email);
             if (user == null)
@@ -88,7 +88,7 @@ namespace LibraryArchive.Services
             }
         }
 
-        public virtual async Task CreateRoleAsync(RoleDto roleDto)
+        public virtual async System.Threading.Tasks.Task CreateRoleAsync(RoleDto roleDto)
         {
             if (await _roleManager.RoleExistsAsync(roleDto.RoleName))
             {

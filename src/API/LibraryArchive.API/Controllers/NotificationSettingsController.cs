@@ -2,10 +2,9 @@
 using LibraryArchive.Services.DTOs.Notification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace LibraryArchive.API.Controllers
 {
@@ -15,16 +14,14 @@ namespace LibraryArchive.API.Controllers
     public class NotificationSettingsController : ControllerBase
     {
         private readonly NotificationSettingsService _notificationSettingsService;
-        private readonly ILogger<NotificationSettingsController> _logger;
 
-        public NotificationSettingsController(NotificationSettingsService notificationSettingsService, ILogger<NotificationSettingsController> logger)
+        public NotificationSettingsController(NotificationSettingsService notificationSettingsService)
         {
             _notificationSettingsService = notificationSettingsService;
-            _logger = logger;
         }
 
         /// <summary>
-        /// Kullanıcının tüm bildirim ayarlarını alır.
+        /// Belirli bir kullanıcıya ait tüm bildirim ayarlarını alır.
         /// </summary>
         /// <returns>Bildirim ayarları listesi</returns>
         /// <response code="200">Bildirim ayarları başarıyla döndürüldü</response>
@@ -33,34 +30,28 @@ namespace LibraryArchive.API.Controllers
         public async Task<IActionResult> GetNotificationSettings()
         {
             var userId = User.FindFirstValue("CustomUserId");
-            if (string.IsNullOrEmpty(userId))
-            {
-                _logger.LogError("User Id is null or empty");
-                return Unauthorized(new { Message = "Invalid user Id." });
-            }
-
-            var settings = await _notificationSettingsService.GetNotificationSettingsByUserIdAsync(userId);
-            return Ok(settings);
+            var notificationSettings = await _notificationSettingsService.GetNotificationSettingsByUserIdAsync(userId);
+            return Ok(notificationSettings);
         }
 
         /// <summary>
-        /// Belirli bir ID'ye sahip bildirim ayarını alır.
+        /// Belirli bir ID'ye sahip bildirim ayarlarını alır.
         /// </summary>
-        /// <param name="id">Bildirim ayarı ID'si</param>
+        /// <param name="id">Bildirim ayarları ID'si</param>
         /// <returns>Bildirim ayarları detayları</returns>
-        /// <response code="200">Bildirim ayarları detayları başarıyla döndürüldü</response>
-        /// <response code="404">Bildirim ayarı bulunamadı</response>
+        /// <response code="200">Bildirim ayarları başarıyla döndürüldü</response>
+        /// <response code="404">Bildirim ayarları bulunamadı</response>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(NotificationSettingsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetNotificationSettingsById(int id)
         {
-            var settings = await _notificationSettingsService.GetNotificationSettingsByIdAsync(id);
-            if (settings == null)
+            var notificationSettings = await _notificationSettingsService.GetNotificationSettingsByIdAsync(id);
+            if (notificationSettings == null)
             {
                 return NotFound($"Notification settings with ID {id} not found.");
             }
-            return Ok(settings);
+            return Ok(notificationSettings);
         }
 
         /// <summary>
@@ -68,68 +59,52 @@ namespace LibraryArchive.API.Controllers
         /// </summary>
         /// <param name="notificationSettingsDto">Bildirim ayarları detayları</param>
         /// <returns>Eklenen bildirim ayarları detayları</returns>
-        /// <response code="201">Bildirim ayarları başarıyla eklendi</response>
+        /// <response code="201">Bildirim ayarı başarıyla eklendi</response>
         /// <response code="400">Bildirim ayarları detayları yanlışsa</response>
         [HttpPost]
         [ProducesResponseType(typeof(NotificationSettingsDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddNotificationSettings([FromBody] NotificationSettingsDto notificationSettingsDto)
+        public async Task<IActionResult> AddNotificationSettings([FromBody] NotificationSettingsCreateDto notificationSettingsDto)
         {
-            var userId = User.FindFirstValue("CustomUserId");
-            if (string.IsNullOrEmpty(userId))
-            {
-                _logger.LogError("User Id is null or empty");
-                return Unauthorized(new { Message = "Invalid user Id." });
-            }
-
-            notificationSettingsDto.UserId = userId;
-            var result = await _notificationSettingsService.AddNotificationSettingsAsync(notificationSettingsDto);
-            if (result == null)
-            {
-                return BadRequest("Failed to add notification settings.");
-            }
-
-            return CreatedAtAction(nameof(GetNotificationSettingsById), new { id = result.NotificationSettingsId }, result);
+            var createdNotificationSettings = await _notificationSettingsService.AddNotificationSettingsAsync(notificationSettingsDto);
+            return CreatedAtAction(nameof(GetNotificationSettingsById), new { id = createdNotificationSettings.NotificationSettingsId }, createdNotificationSettings);
         }
 
         /// <summary>
-        /// Belirli bir ID'ye sahip bildirim ayarını günceller.
+        /// Belirli bir ID'ye sahip bildirim ayarlarını günceller.
         /// </summary>
-        /// <param name="id">Bildirim ayarı ID'si</param>
+        /// <param name="id">Bildirim ayarları ID'si</param>
         /// <param name="notificationSettingsDto">Güncellenmiş bildirim ayarları detayları</param>
         /// <returns>NoContent</returns>
         /// <response code="204">Bildirim ayarları başarıyla güncellendi</response>
         /// <response code="400">Bildirim ayarları ID uyumsuzluğu veya detayları yanlışsa</response>
-        /// <response code="404">Bildirim ayarı bulunamadı</response>
+        /// <response code="404">Bildirim ayarları bulunamadı</response>
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateNotificationSettings(int id, [FromBody] NotificationSettingsDto notificationSettingsDto)
+        public async Task<IActionResult> UpdateNotificationSettings(int id, [FromBody] NotificationSettingsUpdateDto notificationSettingsDto)
         {
-            var userId = User.FindFirstValue("CustomUserId");
             if (id != notificationSettingsDto.NotificationSettingsId)
             {
                 return BadRequest("Notification settings ID mismatch");
             }
 
-            notificationSettingsDto.UserId = userId;
             var result = await _notificationSettingsService.UpdateNotificationSettingsAsync(notificationSettingsDto);
             if (result == null)
             {
                 return NotFound($"Notification settings with ID {id} not found.");
             }
-
             return NoContent();
         }
 
         /// <summary>
-        /// Belirli bir ID'ye sahip bildirim ayarını siler.
+        /// Belirli bir ID'ye sahip bildirim ayarlarını siler.
         /// </summary>
-        /// <param name="id">Bildirim ayarı ID'si</param>
+        /// <param name="id">Bildirim ayarları ID'si</param>
         /// <returns>NoContent</returns>
-        /// <response code="204">Bildirim ayarı başarıyla silindi</response>
-        /// <response code="404">Bildirim ayarı bulunamadı</response>
+        /// <response code="204">Bildirim ayarları başarıyla silindi</response>
+        /// <response code="404">Bildirim ayarları bulunamadı</response>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -140,7 +115,6 @@ namespace LibraryArchive.API.Controllers
             {
                 return NotFound($"Notification settings with ID {id} not found.");
             }
-
             return NoContent();
         }
     }
