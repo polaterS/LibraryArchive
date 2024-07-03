@@ -1,6 +1,7 @@
 ﻿using LibraryArchive.Data.Context;
 using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.Repositories;
+using LibraryArchive.Services.Repositories.Concrete;
 using LibraryArchive.Services.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
@@ -20,6 +21,8 @@ namespace LibraryArchive.Services.Units
         public INoteShareRepository NoteShares { get; private set; }
         public IOrderDetailRepository OrderDetails { get; private set; }
         public IAddressRepository Addresses { get; private set; }
+        public INotificationRepository Notifications { get; private set; }
+        public INotificationSettingsRepository NotificationSettings { get; private set; }
 
         public UnitOfWork(LibraryArchiveContext context, UserManager<ApplicationUser> userManager)
         {
@@ -34,6 +37,8 @@ namespace LibraryArchive.Services.Units
             NoteShares = new NoteShareRepository(_context);
             OrderDetails = new OrderDetailRepository(_context);
             Addresses = new AddressRepository(_context);
+            Notifications = new NotificationRepository(_context);
+            NotificationSettings = new NotificationSettingsRepository(_context);
         }
 
         public int Complete()

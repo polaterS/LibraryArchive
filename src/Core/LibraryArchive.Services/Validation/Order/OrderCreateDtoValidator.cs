@@ -8,7 +8,6 @@ namespace LibraryArchive.Services.Validation.Order
     {
         public OrderCreateDtoValidator()
         {
-            RuleFor(x => x.UserId).NotEmpty().WithMessage("User ID is required.");
             RuleForEach(x => x.OrderDetails).SetValidator(new OrderDetailCreateDtoValidator());
         }
     }

@@ -13,6 +13,8 @@ namespace LibraryArchive.Services.Units
         INoteShareRepository NoteShares { get; }
         IOrderDetailRepository OrderDetails { get; }
         IAddressRepository Addresses { get; }
+        INotificationRepository Notifications { get; }
+        INotificationSettingsRepository NotificationSettings { get; }
 
 
         Task<int> CompleteAsync();  // Asenkron değişiklikleri kaydetmek için

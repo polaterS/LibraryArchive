@@ -11,5 +11,6 @@ namespace LibraryArchive.Services.Repositories.Interfaces
         Task<Address> AddAddressAsync(Address address);
         System.Threading.Tasks.Task UpdateAddressAsync(Address address);
         System.Threading.Tasks.Task DeleteAddressAsync(int addressId);
+        Task<Address> GetDefaultAddressByUserIdAsync(string userId);
     }
 }

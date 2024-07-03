@@ -1,19 +1,37 @@
 ﻿using AutoMapper;
 using LibraryArchive.Data.Entities;
+using LibraryArchive.Services.DTOs.Notification;
 using LibraryArchive.Services.DTOs.Order;
+using LibraryArchive.Services.DTOs.Address;
 using LibraryArchive.Services.Repositories.Interfaces;
+using LibraryArchive.Services.TaskManager.Interfaces;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LibraryArchive.Services
 {
     public class OrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IAddressRepository _addressRepository;
+        private readonly INotificationSenderService _notificationSenderService;
         private readonly IMapper _mapper;
+        private readonly ILogger<OrderService> _logger;
 
-        public OrderService(IOrderRepository orderRepository, IMapper mapper)
+        public OrderService(
+            IOrderRepository orderRepository,
+            IAddressRepository addressRepository,
+            INotificationSenderService notificationSenderService,
+            IMapper mapper,
+            ILogger<OrderService> logger)
         {
             _orderRepository = orderRepository;
+            _addressRepository = addressRepository;
+            _notificationSenderService = notificationSenderService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<OrderReadDto>> GetAllOrdersAsync()
@@ -28,10 +46,57 @@ namespace LibraryArchive.Services
             return order != null ? _mapper.Map<OrderReadDto>(order) : null;
         }
 
-        public async Task<OrderReadDto> AddOrderAsync(OrderCreateDto orderDto)
+        public async Task<OrderReadDto> AddOrderAsync(OrderCreateDto orderDto, string userId)
         {
-            var order = _mapper.Map<Order>(orderDto);
+            // Yeni adresi ekle
+            var address = new Address
+            {
+                UserId = userId,
+                Street = orderDto.Address.Street,
+                City = orderDto.Address.City,
+                State = orderDto.Address.State,
+                PostalCode = orderDto.Address.PostalCode,
+                Country = orderDto.Address.Country,
+                IsDefault = false
+            };
+
+            await _addressRepository.AddAddressAsync(address);
+
+            // Yeni siparişi oluştur
+            var order = new Order
+            {
+                UserId = userId,
+                OrderDate = DateTime.Now,
+                OrderDetails = new List<OrderDetail>()
+            };
+
+            // OrderDetails'i ekle
+            foreach (var orderDetailDto in orderDto.OrderDetails)
+            {
+                var orderDetail = new OrderDetail
+                {
+                    BookId = orderDetailDto.BookId,
+                    Quantity = orderDetailDto.Quantity,
+                    Price = orderDetailDto.Price,
+                    AddressId = address.AddressId // AddressId burada kullanılıyor
+                };
+                order.OrderDetails.Add(orderDetail);
+            }
+
             var addedOrder = await _orderRepository.AddOrderAsync(order);
+
+            // Bildirim gönder
+            var notificationDto = new NotificationCreateDto
+            {
+                UserId = addedOrder.UserId,
+                Title = "Order Placed",
+                Message = $"Your order {addedOrder.OrderId} has been placed successfully.",
+                Date = DateTime.Now,
+                NotificationType = "Email"
+            };
+
+            await _notificationSenderService.SendNotificationAsync(notificationDto);
+
             return _mapper.Map<OrderReadDto>(addedOrder);
         }
 

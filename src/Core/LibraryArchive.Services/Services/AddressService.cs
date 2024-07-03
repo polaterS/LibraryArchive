@@ -12,14 +12,14 @@ namespace LibraryArchive.Services
     public class AddressService
     {
         private readonly IAddressRepository _addressRepository;
-        private readonly IUnitOfWork _unitOfWork; // UnitOfWork tanımı eklendi
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<AddressService> _logger;
 
         public AddressService(IAddressRepository addressRepository, IUnitOfWork unitOfWork, IMapper mapper, ILogger<AddressService> logger)
         {
             _addressRepository = addressRepository;
-            _unitOfWork = unitOfWork; // UnitOfWork constructor'a eklendi
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
         }
@@ -77,6 +77,12 @@ namespace LibraryArchive.Services
                 return true;
             }
             return false;
+        }
+
+        public async Task<AddressReadDto> GetDefaultAddressByUserIdAsync(string userId)
+        {
+            var address = await _addressRepository.GetDefaultAddressByUserIdAsync(userId);
+            return address != null ? _mapper.Map<AddressReadDto>(address) : null;
         }
     }
 }

@@ -9,6 +9,7 @@
         public string State { get; set; }
         public string PostalCode { get; set; }
         public string Country { get; set; }
+        public bool IsDefault { get; set; }
         public virtual ApplicationUser User { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }

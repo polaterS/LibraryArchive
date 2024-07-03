@@ -1,10 +1,11 @@
 ﻿using LibraryArchive.Services.DTOs.OrderDetail;
+using LibraryArchive.Services.DTOs.Address;
 
 namespace LibraryArchive.Services.DTOs.Order
 {
     public class OrderCreateDto
     {
-        public string UserId { get; set; }
         public List<OrderDetailCreateDto> OrderDetails { get; set; }
+        public AddressCreateDto Address { get; set; }
     }
 }

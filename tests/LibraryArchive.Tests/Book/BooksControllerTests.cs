@@ -28,7 +28,7 @@ namespace LibraryArchive.Tests.Book
                 Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
             _loggerMock = new Mock<ILogger<BooksController>>(); // Logger mock nesnesi oluşturuluyor
 
-            _bookService = new BookService(_bookRepositoryMock.Object, _mapperMock.Object, _userManagerMock.Object);
+            //_bookService = new BookService(_bookRepositoryMock.Object, _mapperMock.Object, _userManagerMock.Object);
             // BooksController nesnesi oluşturulurken logger mock nesnesi de sağlanıyor
             _booksController = new BooksController(_bookService, _userManagerMock.Object, _loggerMock.Object);
         }

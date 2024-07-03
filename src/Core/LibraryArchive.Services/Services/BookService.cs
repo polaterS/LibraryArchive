@@ -1,22 +1,32 @@
 ﻿using AutoMapper;
 using LibraryArchive.Data.Entities;
 using LibraryArchive.Services.DTOs.Book;
+using LibraryArchive.Services.DTOs.Notification;
 using LibraryArchive.Services.Repositories.Interfaces;
+using LibraryArchive.Services.TaskManager.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LibraryArchive.Services
 {
     public class BookService
     {
         private readonly IBookRepository _bookRepository;
+        private readonly INotificationSenderService _notificationSenderService;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<BookService> _logger;
 
-        public BookService(IBookRepository bookRepository, IMapper mapper, UserManager<ApplicationUser> userManager)
+        public BookService(IBookRepository bookRepository, INotificationSenderService notificationSenderService, IMapper mapper, UserManager<ApplicationUser> userManager, ILogger<BookService> logger)
         {
             _bookRepository = bookRepository;
+            _notificationSenderService = notificationSenderService;
             _mapper = mapper;
             _userManager = userManager;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<BookReadDto>> GetAllBooksAsync()
@@ -40,9 +50,22 @@ namespace LibraryArchive.Services
             }
 
             var book = _mapper.Map<Book>(bookDto);
-            book.UserId = userId; // Kullanıcı kimliğini ayarla
+            book.UserId = userId;
 
             await _bookRepository.AddBookAsync(book);
+
+            // Kitap eklendiğinde bildirim gönderme
+            var notificationDto = new NotificationCreateDto
+            {
+                UserId = userId,
+                Title = "New Book Added",
+                Message = $"A new book '{book.Title}' has been added.",
+                Date = DateTime.Now,
+                NotificationType = "Email" // veya "SMS", "PushNotification"
+            };
+
+            await _notificationSenderService.SendNotificationAsync(notificationDto);
+
             return _mapper.Map<BookReadDto>(book);
         }
 
@@ -55,6 +78,19 @@ namespace LibraryArchive.Services
             }
             _mapper.Map(bookDto, book);
             await _bookRepository.UpdateBookAsync(book);
+
+            // Kitap güncellendiğinde bildirim gönderme
+            var notificationDto = new NotificationCreateDto
+            {
+                UserId = book.UserId,
+                Title = "Book Updated",
+                Message = $"The book '{book.Title}' has been updated.",
+                Date = DateTime.Now,
+                NotificationType = "Email" // veya "SMS", "PushNotification"
+            };
+
+            await _notificationSenderService.SendNotificationAsync(notificationDto);
+
             return _mapper.Map<BookReadDto>(book);
         }
 

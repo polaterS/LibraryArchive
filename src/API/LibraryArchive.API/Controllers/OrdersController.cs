@@ -1,10 +1,14 @@
-﻿using LibraryArchive.Data.Entities;
-using LibraryArchive.Services;
+﻿using LibraryArchive.Services;
 using LibraryArchive.Services.DTOs.Order;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace LibraryArchive.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class OrdersController : ControllerBase
@@ -57,11 +61,18 @@ namespace LibraryArchive.API.Controllers
         /// <response code="201">Sipariş başarıyla eklendi</response>
         /// <response code="400">Sipariş detayları yanlışsa</response>
         [HttpPost]
-        [ProducesResponseType(typeof(Order), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(OrderReadDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddOrder([FromBody] OrderCreateDto orderDto)
         {
-            var order = await _orderService.AddOrderAsync(orderDto);
+            // Kullanıcı kimliği token'dan çekiliyor
+            var userId = User.FindFirst("CustomUserId")?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            var order = await _orderService.AddOrderAsync(orderDto, userId);
             return CreatedAtAction(nameof(GetOrderById), new { id = order.OrderId }, order);
         }
 

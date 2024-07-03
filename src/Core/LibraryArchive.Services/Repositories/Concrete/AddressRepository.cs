@@ -22,8 +22,6 @@ namespace LibraryArchive.Services.Repositories
             return await _context.Addresses.Where(a => a.UserId == userId).ToListAsync();
         }
 
-
-
         public async Task<Address> GetAddressByIdAsync(string userId, int addressId)
         {
             return await _context.Addresses
@@ -37,13 +35,13 @@ namespace LibraryArchive.Services.Repositories
             return address;
         }
 
-        public async System.Threading.Tasks.Task UpdateAddressAsync(Address address)
+        public async Task UpdateAddressAsync(Address address)
         {
             _context.Addresses.Update(address);
             await _context.SaveChangesAsync();
         }
 
-        public async System.Threading.Tasks.Task DeleteAddressAsync(int addressId)
+        public async Task DeleteAddressAsync(int addressId)
         {
             var address = await _context.Addresses.FindAsync(addressId);
             if (address != null)
@@ -51,6 +49,12 @@ namespace LibraryArchive.Services.Repositories
                 _context.Addresses.Remove(address);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<Address> GetDefaultAddressByUserIdAsync(string userId)
+        {
+            return await _context.Addresses
+                .FirstOrDefaultAsync(a => a.UserId == userId && a.IsDefault);
         }
     }
 }
