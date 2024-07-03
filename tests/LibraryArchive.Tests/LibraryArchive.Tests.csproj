@@ -25,8 +25,8 @@
   <ItemGroup>
     <Folder Include="Address\" />
     <Folder Include="BookShare\" />
+    <Folder Include="Book\" />
     <Folder Include="Category\" />
-    <Folder Include="User\" />
     <Folder Include="Order\" />
     <Folder Include="OrderDetail\" />
     <Folder Include="NoteShare\" />

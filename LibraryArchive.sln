@@ -21,22 +21,22 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Data", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Services", "src\Core\LibraryArchive.Services\LibraryArchive.Services.csproj", "{628B3A7F-4A4C-4FBB-94CD-0B548A11EBBC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{7F9308E4-75A4-4B9B-A847-3237BA1B5BC6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{AC5BF290-5CB5-4B43-A435-89AA2EC6C031}"
 	ProjectSection(SolutionItems) = preProject
-		Address_Management.md = Address_Management.md
-		API_Docs.md = API_Docs.md
-		Auth_Management.md = Auth_Management.md
-		BookShare_Management.md = BookShare_Management.md
-		Book_Management.md = Book_Management.md
-		Category_Management.md = Category_Management.md
-		NoteShare_Management.md = NoteShare_Management.md
-		Note_Management.md = Note_Management.md
-		NotificationSettings_Management.md = NotificationSettings_Management.md
-		Notification_Management.md = Notification_Management.md
-		OrderDetail_Management.md = OrderDetail_Management.md
-		Order_Management.md = Order_Management.md
-		Profile_Management.md = Profile_Management.md
-		User_Management.md = User_Management.md
+		C:\Users\Polater\Desktop\docs\Address_Management.md = C:\Users\Polater\Desktop\docs\Address_Management.md
+		C:\Users\Polater\Desktop\docs\API_Docs.md = C:\Users\Polater\Desktop\docs\API_Docs.md
+		C:\Users\Polater\Desktop\docs\Auth_Management.md = C:\Users\Polater\Desktop\docs\Auth_Management.md
+		C:\Users\Polater\Desktop\docs\BookShare_Management.md = C:\Users\Polater\Desktop\docs\BookShare_Management.md
+		C:\Users\Polater\Desktop\docs\Book_Management.md = C:\Users\Polater\Desktop\docs\Book_Management.md
+		C:\Users\Polater\Desktop\docs\Category_Management.md = C:\Users\Polater\Desktop\docs\Category_Management.md
+		C:\Users\Polater\Desktop\docs\NoteShare_Management.md = C:\Users\Polater\Desktop\docs\NoteShare_Management.md
+		C:\Users\Polater\Desktop\docs\Note_Management.md = C:\Users\Polater\Desktop\docs\Note_Management.md
+		C:\Users\Polater\Desktop\docs\NotificationSettings_Management.md = C:\Users\Polater\Desktop\docs\NotificationSettings_Management.md
+		C:\Users\Polater\Desktop\docs\Notification_Management.md = C:\Users\Polater\Desktop\docs\Notification_Management.md
+		C:\Users\Polater\Desktop\docs\OrderDetail_Management.md = C:\Users\Polater\Desktop\docs\OrderDetail_Management.md
+		C:\Users\Polater\Desktop\docs\Order_Management.md = C:\Users\Polater\Desktop\docs\Order_Management.md
+		C:\Users\Polater\Desktop\docs\Profile_Management.md = C:\Users\Polater\Desktop\docs\Profile_Management.md
+		C:\Users\Polater\Desktop\docs\User_Management.md = C:\Users\Polater\Desktop\docs\User_Management.md
 	EndProjectSection
 EndProject
 Global
