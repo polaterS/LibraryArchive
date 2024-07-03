@@ -1,6 +1,7 @@
 ﻿using LibraryArchive.Data.Entities;
 using LibraryArchive.Services;
 using LibraryArchive.Services.DTOs.Category;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryArchive.API.Controllers
@@ -21,6 +22,7 @@ namespace LibraryArchive.API.Controllers
         /// </summary>
         /// <returns>Kategori listesi</returns>
         /// <response code="200">Kategori listesi başarıyla döndürüldü</response>
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<CategoryReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllCategories()
@@ -36,6 +38,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Kategori detayları</returns>
         /// <response code="200">Kategori detayları başarıyla döndürüldü</response>
         /// <response code="404">Kategori bulunamadı</response>
+        [AllowAnonymous]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(CategoryReadDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -56,6 +59,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Eklenen kategori detayları</returns>
         /// <response code="201">Kategori başarıyla eklendi</response>
         /// <response code="400">Kategori detayları yanlışsa</response>
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpPost]
         [ProducesResponseType(typeof(Category), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -74,6 +78,7 @@ namespace LibraryArchive.API.Controllers
         /// <response code="204">Kategori başarıyla güncellendi</response>
         /// <response code="400">Kategori ID uyumsuzluğu veya detayları yanlışsa</response>
         /// <response code="404">Kategori bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -100,6 +105,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>NoContent</returns>
         /// <response code="204">Kategori başarıyla silindi</response>
         /// <response code="404">Kategori bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

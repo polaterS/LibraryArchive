@@ -33,7 +33,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\LibraryArchive.Services\LibraryArchive.Services.csproj" />
-    <ProjectReference Include="..\..\Utilities\LibraryArchive.Utilities\LibraryArchive.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

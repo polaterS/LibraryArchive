@@ -1,10 +1,12 @@
 ﻿using LibraryArchive.Data.Entities;
 using LibraryArchive.Services;
 using LibraryArchive.Services.DTOs.Note;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryArchive.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class NotesController : ControllerBase
@@ -21,6 +23,7 @@ namespace LibraryArchive.API.Controllers
         /// </summary>
         /// <returns>Notların listesi</returns>
         /// <response code="200">Notların listesi başarıyla döndürüldü</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<NoteReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllNotes()
@@ -36,6 +39,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Not detayları</returns>
         /// <response code="200">Not detayları başarıyla döndürüldü</response>
         /// <response code="404">Not bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(NoteReadDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -56,6 +60,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Eklenen not detayları</returns>
         /// <response code="201">Not başarıyla eklendi</response>
         /// <response code="400">Not detayları yanlışsa</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpPost]
         [ProducesResponseType(typeof(Note), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -74,6 +79,7 @@ namespace LibraryArchive.API.Controllers
         /// <response code="204">Not başarıyla güncellendi</response>
         /// <response code="400">Not ID uyumsuzluğu veya detayları yanlışsa</response>
         /// <response code="404">Not bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -100,6 +106,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>NoContent</returns>
         /// <response code="204">Not başarıyla silindi</response>
         /// <response code="404">Not bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

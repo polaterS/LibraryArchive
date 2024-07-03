@@ -25,6 +25,7 @@ namespace LibraryArchive.API.Controllers
         /// </summary>
         /// <returns>Siparişlerin listesi</returns>
         /// <response code="200">Siparişlerin listesi başarıyla döndürüldü</response>
+        [Authorize(Roles = "Admin,Moderator")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<OrderReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllOrders()
@@ -40,6 +41,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Sipariş detayları</returns>
         /// <response code="200">Sipariş detayları başarıyla döndürüldü</response>
         /// <response code="404">Sipariş bulunamadı</response>
+        [Authorize(Roles = "Admin,Moderator,User")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(OrderReadDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -60,12 +62,14 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Eklenen sipariş detayları</returns>
         /// <response code="201">Sipariş başarıyla eklendi</response>
         /// <response code="400">Sipariş detayları yanlışsa</response>
+        /// <response code="401">Kullanıcı kimliği bulunamadıysa</response>
+        [Authorize(Roles = "Admin,Moderator,User")]
         [HttpPost]
         [ProducesResponseType(typeof(OrderReadDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> AddOrder([FromBody] OrderCreateDto orderDto)
         {
-            // Kullanıcı kimliği token'dan çekiliyor
             var userId = User.FindFirst("CustomUserId")?.Value;
             if (userId == null)
             {
@@ -85,6 +89,7 @@ namespace LibraryArchive.API.Controllers
         /// <response code="204">Sipariş başarıyla güncellendi</response>
         /// <response code="400">Sipariş ID uyumsuzluğu veya detayları yanlışsa</response>
         /// <response code="404">Sipariş bulunamadı</response>
+        [Authorize(Roles = "Admin,Moderator,User")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -111,6 +116,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>NoContent</returns>
         /// <response code="204">Sipariş başarıyla silindi</response>
         /// <response code="404">Sipariş bulunamadı</response>
+        [Authorize(Roles = "Admin,Moderator")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -1,5 +1,6 @@
 ﻿using LibraryArchive.Services;
 using LibraryArchive.Services.DTOs.OrderDetail;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryArchive.API.Controllers
@@ -20,6 +21,7 @@ namespace LibraryArchive.API.Controllers
         /// </summary>
         /// <returns>Sipariş detaylarının listesi</returns>
         /// <response code="200">Sipariş detaylarının listesi başarıyla döndürüldü</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<OrderDetailReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllOrderDetails()
@@ -35,6 +37,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Sipariş detayı</returns>
         /// <response code="200">Sipariş detayı başarıyla döndürüldü</response>
         /// <response code="404">Sipariş detayı bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(OrderDetailReadDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -55,6 +58,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Eklenen sipariş detayı</returns>
         /// <response code="201">Sipariş detayı başarıyla eklendi</response>
         /// <response code="400">Sipariş detayı detayları yanlışsa</response>
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpPost]
         [ProducesResponseType(typeof(OrderDetailReadDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -73,6 +77,7 @@ namespace LibraryArchive.API.Controllers
         /// <response code="204">Sipariş detayı başarıyla güncellendi</response>
         /// <response code="400">Sipariş detayı ID uyumsuzluğu veya detayları yanlışsa</response>
         /// <response code="404">Sipariş detayı bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -99,6 +104,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>NoContent</returns>
         /// <response code="204">Sipariş detayı başarıyla silindi</response>
         /// <response code="404">Sipariş detayı bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

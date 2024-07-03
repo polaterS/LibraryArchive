@@ -25,6 +25,7 @@ namespace LibraryArchive.API.Controllers
         /// </summary>
         /// <returns>Bildirim listesi</returns>
         /// <response code="200">Bildirimler başarıyla döndürüldü</response>
+        [Authorize(Roles = "Admin, User")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<NotificationReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetNotifications()
@@ -41,6 +42,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Bildirim detayları</returns>
         /// <response code="200">Bildirim detayları başarıyla döndürüldü</response>
         /// <response code="404">Bildirim bulunamadı</response>
+        [Authorize(Roles = "Admin, User")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(NotificationReadDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -61,6 +63,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Eklenen bildirim detayları</returns>
         /// <response code="201">Bildirim başarıyla eklendi</response>
         /// <response code="400">Bildirim detayları yanlışsa</response>
+        [Authorize(Roles = "Admin, User")]
         [HttpPost]
         [ProducesResponseType(typeof(NotificationReadDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -79,6 +82,7 @@ namespace LibraryArchive.API.Controllers
         /// <response code="204">Bildirim başarıyla güncellendi</response>
         /// <response code="400">Bildirim ID uyumsuzluğu veya detayları yanlışsa</response>
         /// <response code="404">Bildirim bulunamadı</response>
+        [Authorize(Roles = "Admin, User")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -105,6 +109,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>NoContent</returns>
         /// <response code="204">Bildirim başarıyla silindi</response>
         /// <response code="404">Bildirim bulunamadı</response>
+        [Authorize(Roles = "Admin, User")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -1,6 +1,7 @@
 ﻿using LibraryArchive.Data.Entities;
 using LibraryArchive.Services;
 using LibraryArchive.Services.DTOs.NoteShare;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryArchive.API.Controllers
@@ -21,6 +22,7 @@ namespace LibraryArchive.API.Controllers
         /// </summary>
         /// <returns>Not paylaşımlarının listesi</returns>
         /// <response code="200">Not paylaşımlarının listesi başarıyla döndürüldü</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<NoteShareReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllNoteShares()
@@ -36,6 +38,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Not paylaşımı detayları</returns>
         /// <response code="200">Not paylaşımı detayları başarıyla döndürüldü</response>
         /// <response code="404">Not paylaşımı bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(NoteShareReadDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -56,6 +59,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Eklenen not paylaşımı detayları</returns>
         /// <response code="201">Not paylaşımı başarıyla eklendi</response>
         /// <response code="400">Not paylaşımı detayları yanlışsa</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpPost]
         [ProducesResponseType(typeof(NoteShare), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -74,6 +78,7 @@ namespace LibraryArchive.API.Controllers
         /// <response code="204">Not paylaşımı başarıyla güncellendi</response>
         /// <response code="400">Not paylaşımı ID uyumsuzluğu veya detayları yanlışsa</response>
         /// <response code="404">Not paylaşımı bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -100,6 +105,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>NoContent</returns>
         /// <response code="204">Not paylaşımı başarıyla silindi</response>
         /// <response code="404">Not paylaşımı bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

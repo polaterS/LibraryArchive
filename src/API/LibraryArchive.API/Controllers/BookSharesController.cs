@@ -1,10 +1,12 @@
 ﻿using LibraryArchive.Data.Entities;
 using LibraryArchive.Services;
 using LibraryArchive.Services.DTOs.BookShare;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryArchive.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class BookSharesController : ControllerBase
@@ -21,6 +23,7 @@ namespace LibraryArchive.API.Controllers
         /// </summary>
         /// <returns>Kitap paylaşım listesi</returns>
         /// <response code="200">Kitap paylaşım listesi başarıyla döndürüldü</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<BookShareReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllBookShares()
@@ -36,6 +39,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Kitap paylaşım detayları</returns>
         /// <response code="200">Kitap paylaşım detayları başarıyla döndürüldü</response>
         /// <response code="404">Kitap paylaşımı bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(BookShareReadDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -56,6 +60,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Eklenen kitap paylaşımı detayları</returns>
         /// <response code="201">Kitap paylaşımı başarıyla eklendi</response>
         /// <response code="400">Kitap paylaşım detayları yanlışsa</response>
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpPost]
         [ProducesResponseType(typeof(BookShare), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -74,6 +79,7 @@ namespace LibraryArchive.API.Controllers
         /// <response code="204">Kitap paylaşımı başarıyla güncellendi</response>
         /// <response code="400">Kitap paylaşım ID uyumsuzluğu veya detayları yanlışsa</response>
         /// <response code="404">Kitap paylaşımı bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -100,6 +106,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>NoContent</returns>
         /// <response code="204">Kitap paylaşımı başarıyla silindi</response>
         /// <response code="404">Kitap paylaşımı bulunamadı</response>
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

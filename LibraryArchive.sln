@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{25A3A06E-B51
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{1E337240-7402-4D32-A3FF-B4B51555472C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryArchive.API", "src\API\LibraryArchive.API\LibraryArchive.API.csproj", "{72D8BE2F-02E4-4C67-9A6C-39FE95707211}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.API", "src\API\LibraryArchive.API\LibraryArchive.API.csproj", "{72D8BE2F-02E4-4C67-9A6C-39FE95707211}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{606F18CC-8DBA-4AEC-AD2A-338637CADD3C}"
 EndProject
@@ -17,15 +17,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{D009C1EA-8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{67A7F35A-8211-4C44-B26A-905C63637778}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryArchive.Tests", "tests\LibraryArchive.Tests\LibraryArchive.Tests.csproj", "{5ACB96B8-FC14-4854-8629-AE0DD065EE1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Tests", "tests\LibraryArchive.Tests\LibraryArchive.Tests.csproj", "{5ACB96B8-FC14-4854-8629-AE0DD065EE1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryArchive.Data", "src\Core\LibraryArchive.Data\LibraryArchive.Data.csproj", "{9FA5F680-75D7-4CC5-8BC2-257097B2E2B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Data", "src\Core\LibraryArchive.Data\LibraryArchive.Data.csproj", "{9FA5F680-75D7-4CC5-8BC2-257097B2E2B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryArchive.Services", "src\Core\LibraryArchive.Services\LibraryArchive.Services.csproj", "{628B3A7F-4A4C-4FBB-94CD-0B548A11EBBC}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{7972C6B8-EBB0-4327-809A-C49F62BDC409}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryArchive.Utilities", "src\Utilities\LibraryArchive.Utilities\LibraryArchive.Utilities.csproj", "{A719991F-B8CE-41D3-8F6E-7072DCD50896}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryArchive.Services", "src\Core\LibraryArchive.Services\LibraryArchive.Services.csproj", "{628B3A7F-4A4C-4FBB-94CD-0B548A11EBBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,10 +45,6 @@ Global
 		{628B3A7F-4A4C-4FBB-94CD-0B548A11EBBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{628B3A7F-4A4C-4FBB-94CD-0B548A11EBBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{628B3A7F-4A4C-4FBB-94CD-0B548A11EBBC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A719991F-B8CE-41D3-8F6E-7072DCD50896}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A719991F-B8CE-41D3-8F6E-7072DCD50896}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A719991F-B8CE-41D3-8F6E-7072DCD50896}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A719991F-B8CE-41D3-8F6E-7072DCD50896}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,8 +56,6 @@ Global
 		{5ACB96B8-FC14-4854-8629-AE0DD065EE1E} = {3CD14E4C-3095-4CC4-B5BB-A5849E89BF6C}
 		{9FA5F680-75D7-4CC5-8BC2-257097B2E2B2} = {606F18CC-8DBA-4AEC-AD2A-338637CADD3C}
 		{628B3A7F-4A4C-4FBB-94CD-0B548A11EBBC} = {606F18CC-8DBA-4AEC-AD2A-338637CADD3C}
-		{7972C6B8-EBB0-4327-809A-C49F62BDC409} = {25A3A06E-B518-4CB7-93BF-F97D4F2C57C1}
-		{A719991F-B8CE-41D3-8F6E-7072DCD50896} = {7972C6B8-EBB0-4327-809A-C49F62BDC409}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B1DDA455-0643-49F9-8CE6-F6ECD4BAC2AD}

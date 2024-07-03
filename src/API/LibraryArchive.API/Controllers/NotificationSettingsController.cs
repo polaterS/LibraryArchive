@@ -25,6 +25,7 @@ namespace LibraryArchive.API.Controllers
         /// </summary>
         /// <returns>Bildirim ayarları listesi</returns>
         /// <response code="200">Bildirim ayarları başarıyla döndürüldü</response>
+        [Authorize(Roles = "Admin, User")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<NotificationSettingsDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetNotificationSettings()
@@ -41,6 +42,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Bildirim ayarları detayları</returns>
         /// <response code="200">Bildirim ayarları başarıyla döndürüldü</response>
         /// <response code="404">Bildirim ayarları bulunamadı</response>
+        [Authorize(Roles = "Admin, User")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(NotificationSettingsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -61,6 +63,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Eklenen bildirim ayarları detayları</returns>
         /// <response code="201">Bildirim ayarı başarıyla eklendi</response>
         /// <response code="400">Bildirim ayarları detayları yanlışsa</response>
+        [Authorize(Roles = "Admin, User")]
         [HttpPost]
         [ProducesResponseType(typeof(NotificationSettingsDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -79,6 +82,7 @@ namespace LibraryArchive.API.Controllers
         /// <response code="204">Bildirim ayarları başarıyla güncellendi</response>
         /// <response code="400">Bildirim ayarları ID uyumsuzluğu veya detayları yanlışsa</response>
         /// <response code="404">Bildirim ayarları bulunamadı</response>
+        [Authorize(Roles = "Admin, User")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -105,6 +109,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>NoContent</returns>
         /// <response code="204">Bildirim ayarları başarıyla silindi</response>
         /// <response code="404">Bildirim ayarları bulunamadı</response>
+        [Authorize(Roles = "Admin, User")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -25,6 +25,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Kayıtlı kullanıcı için JWT belirteci</returns>
         /// <response code="200">Kayıtlı kullanıcı için JWT token döndürür</response>
         /// <response code="400">Kayıt ayrıntıları yanlışsa</response>
+        [AllowAnonymous]
         [HttpPost("Register")]
         [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -42,12 +43,13 @@ namespace LibraryArchive.API.Controllers
         }
 
         /// <summary>
-        /// Kullanıcı Girişi.
+        /// Kullanıcı girişi yapar.
         /// </summary>
         /// <param name="loginDto">Giriş detayları</param>
         /// <returns>JWT token</returns>
         /// <response code="200">JWT token döndürür</response>
         /// <response code="400">Giriş bilgileri yanlışsa</response>
+        [AllowAnonymous]
         [HttpPost("Login")]
         [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -65,12 +67,12 @@ namespace LibraryArchive.API.Controllers
         }
 
         /// <summary>
-        /// Bir kullanıcıya bir rol atar.
+        /// Bir kullanıcıya rol atar.
         /// </summary>
-        /// <param name="assignRoleDto">Rol atama ayrıntıları</param>
-        /// <returns>Onay mesajı döndürür.</returns>
+        /// <param name="assignRoleDto">Rol atama detayları</param>
+        /// <returns>Onay mesajı döndürür</returns>
         /// <response code="200">Rol başarıyla atandı</response>
-        /// <response code="400">Rol atama ayrıntıları yanlışsa</response>
+        /// <response code="400">Rol atama detayları yanlışsa</response>
         /// <response code="403">Kullanıcı yetkili değilse</response>
         [Authorize(Roles = "Admin")]
         [HttpPost("AssignRole")]
@@ -93,10 +95,10 @@ namespace LibraryArchive.API.Controllers
         /// <summary>
         /// Yeni bir rol oluşturur.
         /// </summary>
-        /// <param name="roleDto">Rol ayrıntıları</param>
-        /// <returns>Onay mesajı döndürür.</returns>
+        /// <param name="roleDto">Rol detayları</param>
+        /// <returns>Onay mesajı döndürür</returns>
         /// <response code="200">Rol başarıyla oluşturuldu</response>
-        /// <response code="400">Rol ayrıntıları yanlışsa</response>
+        /// <response code="400">Rol detayları yanlışsa</response>
         /// <response code="403">Kullanıcı yetkili değilse</response>
         [Authorize(Roles = "Admin")]
         [HttpPost("CreateRole")]

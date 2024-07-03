@@ -28,6 +28,7 @@ namespace LibraryArchive.API.Controllers
         /// </summary>
         /// <returns>Kullanıcının adresleri</returns>
         /// <response code="200">Adresler başarıyla döndürüldü</response>
+        [Authorize(Roles = "Admin,User")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<AddressReadDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAddresses()
@@ -44,6 +45,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Adres detayları</returns>
         /// <response code="200">Adres detayları başarıyla döndürüldü</response>
         /// <response code="404">Adres bulunamadı</response>
+        [Authorize(Roles = "Admin,User")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(AddressReadDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -65,6 +67,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>Eklenen adres detayları</returns>
         /// <response code="201">Adres başarıyla eklendi</response>
         /// <response code="400">Adres detayları yanlışsa</response>
+        [Authorize(Roles = "Admin,User")]
         [HttpPost]
         [ProducesResponseType(typeof(AddressReadDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -98,6 +101,7 @@ namespace LibraryArchive.API.Controllers
         /// <response code="204">Adres başarıyla güncellendi</response>
         /// <response code="400">Adres ID uyumsuzluğu veya detayları yanlışsa</response>
         /// <response code="404">Adres bulunamadı</response>
+        [Authorize(Roles = "Admin,User")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -125,6 +129,7 @@ namespace LibraryArchive.API.Controllers
         /// <returns>NoContent</returns>
         /// <response code="204">Adres başarıyla silindi</response>
         /// <response code="404">Adres bulunamadı</response>
+        [Authorize(Roles = "Admin,User")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
