@@ -28,51 +28,51 @@ Kimlik doğrulama süreçleri hakkında detaylı bilgiye [Kimlik Yönetimi Dokü
 
 ## Kullanıcı Yönetimi
 
-Kullanıcıların yönetimi hakkında daha fazla bilgi almak için [Kullanıcı Yönetimi Dokümantasyonu](user_management.md) adresini ziyaret edin.
+Kullanıcıların yönetimi hakkında daha fazla bilgi almak için [Kullanıcı Yönetimi Dokümantasyonu](User_Management.md) adresini ziyaret edin.
 
 ## Profil Yönetimi
 
-Profil ayarları hakkında detaylı bilgi için [Profil Yönetimi Dokümantasyonu](profile_management.md) sayfasını inceleyebilirsiniz.
+Profil ayarları hakkında detaylı bilgi için [Profil Yönetimi Dokümantasyonu](Profile_Management.md) sayfasını inceleyebilirsiniz.
 
 ## Adres Yönetimi
 
-Kullanıcı adreslerini yönetme hakkında bilgiye [Adres Yönetimi Dokümantasyonu](address_management.md) üzerinden ulaşabilirsiniz.
+Kullanıcı adreslerini yönetme hakkında bilgiye [Adres Yönetimi Dokümantasyonu](Address_Management.md) üzerinden ulaşabilirsiniz.
 
 ## Kitap Yönetimi
 
-Kitap yönetimi hakkında kapsamlı bilgi için [Kitap Yönetimi Dokümantasyonu](book_management.md) sayfasına bakabilirsiniz.
+Kitap yönetimi hakkında kapsamlı bilgi için [Kitap Yönetimi Dokümantasyonu](Book_Management.md) sayfasına bakabilirsiniz.
 
 ## Kitap Paylaşım Yönetimi
 
-Kitap paylaşımı hakkında bilgi almak için [Kitap Paylaşım Yönetimi Dokümantasyonu](bookshare_management.md) sayfasını ziyaret edin.
+Kitap paylaşımı hakkında bilgi almak için [Kitap Paylaşım Yönetimi Dokümantasyonu](Bookshare_Management.md) sayfasını ziyaret edin.
 
 ## Kategori Yönetimi
 
-Kategori yönetimi hakkında detaylı bilgiye [Kategori Yönetimi Dokümantasyonu](category_management.md) üzerinden ulaşabilirsiniz.
+Kategori yönetimi hakkında detaylı bilgiye [Kategori Yönetimi Dokümantasyonu](Category_Management.md) üzerinden ulaşabilirsiniz.
 
 ## Not Yönetimi
 
-Notları yönetme hakkında detaylı bilgi için [Not Yönetimi Dokümantasyonu](note_management.md) sayfasını inceleyin.
+Notları yönetme hakkında detaylı bilgi için [Not Yönetimi Dokümantasyonu](Note_Management.md) sayfasını inceleyin.
 
 ## Not Paylaşım Yönetimi
 
-Not paylaşımı hakkında bilgi almak için [Not Paylaşım Yönetimi Dokümantasyonu](noteshare_management.md) sayfasını ziyaret edin.
+Not paylaşımı hakkında bilgi almak için [Not Paylaşım Yönetimi Dokümantasyonu](NoteShare_Management.md) sayfasını ziyaret edin.
 
 ## Sipariş Yönetimi
 
-Sipariş yönetimi hakkında kapsamlı bilgi için [Sipariş Yönetimi Dokümantasyonu](order_management.md) sayfasına bakabilirsiniz.
+Sipariş yönetimi hakkında kapsamlı bilgi için [Sipariş Yönetimi Dokümantasyonu](Order_Management.md) sayfasına bakabilirsiniz.
 
 ## Sipariş Detay Yönetimi
 
-Sipariş detaylarını yönetme hakkında bilgiye [Sipariş Detay Yönetimi Dokümantasyonu](orderdetail_management.md) üzerinden ulaşabilirsiniz.
+Sipariş detaylarını yönetme hakkında bilgiye [Sipariş Detay Yönetimi Dokümantasyonu](OrderDetail_Management.md) üzerinden ulaşabilirsiniz.
 
 ## Bildirim Yönetimi
 
-Bildirim yönetimi hakkında bilgi almak için [Bildirim Yönetimi Dokümantasyonu](notification_management.md) sayfasını ziyaret edin.
+Bildirim yönetimi hakkında bilgi almak için [Bildirim Yönetimi Dokümantasyonu](Notification_Management.md) sayfasını ziyaret edin.
 
 ## Bildirim Ayarları Yönetimi
 
-Bildirim ayarları hakkında detaylı bilgi için [Bildirim Ayarları Yönetimi Dokümantasyonu](notificationsettings_management.md) sayfasını inceleyin.
+Bildirim ayarları hakkında detaylı bilgi için [Bildirim Ayarları Yönetimi Dokümantasyonu](NotificationSettings_Management.md) sayfasını inceleyin.
 
 
 
