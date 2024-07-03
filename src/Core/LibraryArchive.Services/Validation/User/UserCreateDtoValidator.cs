@@ -7,11 +7,25 @@ namespace LibraryArchive.Services.Validation.User
     {
         public UserCreateDtoValidator()
         {
-            RuleFor(x => x.UserName).NotEmpty().WithMessage("User name is required.");
-            RuleFor(x => x.Email).NotEmpty().EmailAddress().WithMessage("Valid email is required.");
-            RuleFor(x => x.Password).NotEmpty().MinimumLength(6).WithMessage("Password must be at least 6 characters long.");
-            RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required.");
-            RuleFor(x => x.Surname).NotEmpty().WithMessage("Surname is required.");
+            RuleFor(x => x.UserName)
+                .NotEmpty().WithMessage("Kullanıcı adı gereklidir.")
+                .MaximumLength(50).WithMessage("Kullanıcı adı en fazla 50 karakter olabilir.");
+
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Email gereklidir.")
+                .EmailAddress().WithMessage("Geçerli bir email adresi olmalıdır.");
+
+            RuleFor(x => x.Password)
+                .NotEmpty().WithMessage("Şifre gereklidir.")
+                .MinimumLength(6).WithMessage("Şifre en az 6 karakter olmalıdır.");
+
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Ad gereklidir.")
+                .MaximumLength(50).WithMessage("Ad en fazla 50 karakter olabilir.");
+
+            RuleFor(x => x.Surname)
+                .NotEmpty().WithMessage("Soyad gereklidir.")
+                .MaximumLength(50).WithMessage("Soyad en fazla 50 karakter olabilir.");
         }
     }
 }

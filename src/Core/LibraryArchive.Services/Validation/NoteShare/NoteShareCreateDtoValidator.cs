@@ -7,9 +7,21 @@ namespace LibraryArchive.Services.Validation.NoteShare
     {
         public NoteShareCreateDtoValidator()
         {
-            RuleFor(x => x.NoteId).GreaterThan(0).WithMessage("Note ID must be greater than 0.");
-            RuleFor(x => x.SharedWithUserId).NotEmpty().WithMessage("Shared with user ID is required.");
-            RuleFor(x => x.ShareType).NotEmpty().WithMessage("Share type is required.");
+            RuleFor(x => x.NoteId)
+                .GreaterThan(0).WithMessage("Not ID'si 0'dan büyük olmalıdır.");
+
+            RuleFor(x => x.SharedWithUserId)
+                .NotEmpty().WithMessage("Paylaşılan kullanıcı ID'si gereklidir.");
+
+            RuleFor(x => x.ShareType)
+                .NotEmpty().WithMessage("Paylaşım türü gereklidir.")
+                .Must(BeValidShareType).WithMessage("Geçersiz paylaşım türü.");
+        }
+
+        private bool BeValidShareType(string shareType)
+        {
+            var validShareTypes = new List<string> { "public", "private", "friends" };
+            return validShareTypes.Contains(shareType);
         }
     }
 }

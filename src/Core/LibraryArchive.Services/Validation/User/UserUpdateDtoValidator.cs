@@ -7,9 +7,20 @@ namespace LibraryArchive.Services.Validation.User
     {
         public UserUpdateDtoValidator()
         {
-            RuleFor(x => x.Email).NotEmpty().EmailAddress().WithMessage("Valid email is required.");
-            RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required.");
-            RuleFor(x => x.Surname).NotEmpty().WithMessage("Surname is required.");
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("Kullanıcı ID'si gereklidir.");
+
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Email gereklidir.")
+                .EmailAddress().WithMessage("Geçerli bir email adresi olmalıdır.");
+
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Ad gereklidir.")
+                .MaximumLength(50).WithMessage("Ad en fazla 50 karakter olabilir.");
+
+            RuleFor(x => x.Surname)
+                .NotEmpty().WithMessage("Soyad gereklidir.")
+                .MaximumLength(50).WithMessage("Soyad en fazla 50 karakter olabilir.");
         }
     }
 }

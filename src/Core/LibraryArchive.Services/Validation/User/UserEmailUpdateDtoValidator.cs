@@ -7,8 +7,12 @@ namespace LibraryArchive.Services.Validation.User
     {
         public UserEmailUpdateDtoValidator()
         {
-            RuleFor(x => x.Email).NotEmpty().WithMessage("Email is required.").EmailAddress().WithMessage("Invalid email format.");
-            RuleFor(x => x.CurrentPassword).NotEmpty().WithMessage("Current password is required.");
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Yeni email gereklidir.")
+                .EmailAddress().WithMessage("Geçerli bir email adresi olmalıdır.");
+
+            RuleFor(x => x.CurrentPassword)
+                .NotEmpty().WithMessage("Mevcut şifre gereklidir.");
         }
     }
 }

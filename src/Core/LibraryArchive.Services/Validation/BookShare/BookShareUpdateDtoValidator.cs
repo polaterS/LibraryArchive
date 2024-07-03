@@ -7,8 +7,10 @@ namespace LibraryArchive.Services.Validation.BookShare
     {
         public BookShareUpdateDtoValidator()
         {
-            RuleFor(x => x.BookShareId).GreaterThan(0).WithMessage("Book Share ID must be greater than 0.");
-            RuleFor(x => x.ShareType).NotEmpty().WithMessage("Share type is required.");
+            RuleFor(x => x.BookShareId)
+                .GreaterThan(0).WithMessage("Kitap Paylaşım ID'si 0'dan büyük olmalıdır.");
+            RuleFor(x => x.ShareType)
+                .NotEmpty().WithMessage("Paylaşım türü gereklidir.");
         }
     }
 }

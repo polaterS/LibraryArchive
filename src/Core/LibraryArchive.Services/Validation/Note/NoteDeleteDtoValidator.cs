@@ -7,7 +7,8 @@ namespace LibraryArchive.Services.Validation.Note
     {
         public NoteDeleteDtoValidator()
         {
-            RuleFor(x => x.NoteId).GreaterThan(0).WithMessage("Note ID must be greater than 0.");
+            RuleFor(x => x.NoteId)
+                .GreaterThan(0).WithMessage("Not ID'si 0'dan büyük olmalıdır.");
         }
     }
 }

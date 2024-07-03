@@ -7,7 +7,8 @@ namespace LibraryArchive.Services.Validation.Book
     {
         public BookDeleteDtoValidator()
         {
-            RuleFor(x => x.BookId).GreaterThan(0).WithMessage("Book ID must be greater than 0.");
+            RuleFor(x => x.BookId)
+                .GreaterThan(0).WithMessage("Kitap ID'si pozitif bir sayı olmalıdır.");
         }
     }
 }

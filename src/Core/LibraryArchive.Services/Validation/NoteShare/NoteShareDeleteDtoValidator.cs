@@ -7,7 +7,8 @@ namespace LibraryArchive.Services.Validation.NoteShare
     {
         public NoteShareDeleteDtoValidator()
         {
-            RuleFor(x => x.NoteShareId).GreaterThan(0).WithMessage("Note Share ID must be greater than 0.");
+            RuleFor(x => x.NoteShareId)
+                .GreaterThan(0).WithMessage("Not Paylaşım ID'si 0'dan büyük olmalıdır.");
         }
     }
 }

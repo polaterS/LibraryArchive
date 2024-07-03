@@ -7,9 +7,17 @@ namespace LibraryArchive.Services.Validation.OrderDetail
     {
         public OrderDetailUpdateDtoValidator()
         {
-            RuleFor(x => x.OrderDetailId).GreaterThan(0).WithMessage("Order Detail ID must be greater than 0.");
-            RuleFor(x => x.Quantity).GreaterThan(0).WithMessage("Quantity must be greater than 0.");
-            RuleFor(x => x.Price).GreaterThan(0).WithMessage("Price must be greater than 0.");
+            RuleFor(x => x.OrderDetailId)
+                .GreaterThan(0).WithMessage("Sipariş Detayı ID'si 0'dan büyük olmalıdır.");
+
+            RuleFor(x => x.BookId)
+                .GreaterThan(0).WithMessage("Kitap ID'si 0'dan büyük olmalıdır.");
+
+            RuleFor(x => x.Quantity)
+                .GreaterThan(0).WithMessage("Miktar 0'dan büyük olmalıdır.");
+
+            RuleFor(x => x.Price)
+                .GreaterThan(0).WithMessage("Fiyat 0'dan büyük olmalıdır.");
         }
     }
 }

@@ -7,7 +7,8 @@ namespace LibraryArchive.Services.Validation.Category
     {
         public CategoryDeleteDtoValidator()
         {
-            RuleFor(x => x.CategoryId).GreaterThan(0).WithMessage("Category ID must be greater than 0.");
+            RuleFor(x => x.CategoryId)
+                .GreaterThan(0).WithMessage("Kategori ID'si 0'dan büyük olmalıdır.");
         }
     }
 }

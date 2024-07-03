@@ -7,8 +7,12 @@ namespace LibraryArchive.Services.Validation.User
     {
         public UserPasswordUpdateDtoValidator()
         {
-            RuleFor(x => x.CurrentPassword).NotEmpty().WithMessage("Current password is required.");
-            RuleFor(x => x.NewPassword).NotEmpty().WithMessage("New password is required.").MinimumLength(6).WithMessage("New password must be at least 6 characters.");
+            RuleFor(x => x.CurrentPassword)
+                .NotEmpty().WithMessage("Mevcut şifre gereklidir.");
+
+            RuleFor(x => x.NewPassword)
+                .NotEmpty().WithMessage("Yeni şifre gereklidir.")
+                .MinimumLength(6).WithMessage("Yeni şifre en az 6 karakter olmalıdır.");
         }
     }
 }

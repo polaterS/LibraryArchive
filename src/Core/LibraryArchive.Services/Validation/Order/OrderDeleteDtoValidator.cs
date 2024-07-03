@@ -7,7 +7,8 @@ namespace LibraryArchive.Services.Validation.Order
     {
         public OrderDeleteDtoValidator()
         {
-            RuleFor(x => x.OrderId).GreaterThan(0).WithMessage("Order ID must be greater than 0.");
+            RuleFor(x => x.OrderId)
+                .GreaterThan(0).WithMessage("Sipariş ID'si 0'dan büyük olmalıdır.");
         }
     }
 }

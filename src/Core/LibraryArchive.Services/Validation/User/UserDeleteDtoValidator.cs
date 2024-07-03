@@ -7,7 +7,8 @@ namespace LibraryArchive.Services.Validation.User
     {
         public UserDeleteDtoValidator()
         {
-            RuleFor(x => x.Id).NotEmpty().WithMessage("User ID is required.");
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("Kullanıcı ID'si gereklidir.");
         }
     }
 }
