@@ -80,4 +80,4 @@ Bildirim ayarları hakkında detaylı bilgi için [Bildirim Ayarları Yönetimi 
 
 ## Lisans
 
-Bu proje MIT Lisansı altında lisanslanmıştır. Detaylar için [LİSANS](LICENSE) dosyasına bakabilirsiniz.
+Bu proje MIT Lisansı altında lisanslanmıştır. Detaylar için [LİSANS](LICENSE.txt) dosyasına bakabilirsiniz.
