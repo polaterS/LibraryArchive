@@ -74,7 +74,7 @@ namespace LibraryArchive.API.Controllers
         /// <response code="200">Rol başarıyla atandı</response>
         /// <response code="400">Rol atama detayları yanlışsa</response>
         /// <response code="403">Kullanıcı yetkili değilse</response>
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPost("AssignRole")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -100,7 +100,7 @@ namespace LibraryArchive.API.Controllers
         /// <response code="200">Rol başarıyla oluşturuldu</response>
         /// <response code="400">Rol detayları yanlışsa</response>
         /// <response code="403">Kullanıcı yetkili değilse</response>
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPost("CreateRole")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

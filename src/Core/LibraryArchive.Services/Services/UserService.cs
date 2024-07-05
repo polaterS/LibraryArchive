@@ -65,7 +65,16 @@ namespace LibraryArchive.Services
         public async Task<IEnumerable<UserReadDto>> GetAllUsersAsync()
         {
             var users = await _userRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<UserReadDto>>(users);
+            var userDtos = _mapper.Map<IEnumerable<UserReadDto>>(users);
+
+            foreach (var userDto in userDtos)
+            {
+                var user = users.First(u => u.Id == userDto.Id);
+                var roles = await _userManager.GetRolesAsync(user);
+                userDto.Roles = roles;
+            }
+
+            return userDtos;
         }
 
         public async Task<IdentityResult> UpdateUserAsync(UserUpdateDto userDto)

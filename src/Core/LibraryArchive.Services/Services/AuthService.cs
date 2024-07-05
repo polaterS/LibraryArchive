@@ -47,8 +47,23 @@ namespace LibraryArchive.Services
                 throw new Exception(string.Join("\n", result.Errors.Select(e => e.Description)));
             }
 
+            // "User" rolünü otomatik olarak atama
+            if (await _roleManager.RoleExistsAsync("User"))
+            {
+                var roleResult = await _userManager.AddToRoleAsync(user, "User");
+                if (!roleResult.Succeeded)
+                {
+                    throw new Exception(string.Join("\n", roleResult.Errors.Select(e => e.Description)));
+                }
+            }
+            else
+            {
+                throw new Exception("User role does not exist.");
+            }
+
             return await GenerateJwtToken(user);
         }
+
 
         public virtual async Task<string> LoginAsync(LoginDto loginDto)
         {

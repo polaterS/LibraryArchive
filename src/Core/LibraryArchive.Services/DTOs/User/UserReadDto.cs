@@ -15,10 +15,10 @@ namespace LibraryArchive.Services.DTOs.User
         public string Surname { get; set; }
         public bool IsActive { get; set; }
         public string ProfilePictureUrl { get; set; }
-        public IEnumerable<string> Roles { get; set; }
-        public IEnumerable<BookReadDto> Books { get; set; }
-        public IEnumerable<NoteReadDto> Notes { get; set; }
-        public IEnumerable<OrderReadDto> Orders { get; set; }
-        public IEnumerable<AddressReadDto> Addresses { get; set; }
+        public IEnumerable<string> Roles { get; set; } = new List<string>();
+        public IEnumerable<BookReadDto> Books { get; set; } = new List<BookReadDto>();
+        public IEnumerable<NoteReadDto> Notes { get; set; } = new List<NoteReadDto>();
+        public IEnumerable<OrderReadDto> Orders { get; set; } = new List<OrderReadDto>();
+        public IEnumerable<AddressReadDto> Addresses { get; set; } = new List<AddressReadDto>();
     }
 }

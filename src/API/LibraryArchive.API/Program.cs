@@ -22,7 +22,7 @@ namespace LibraryArchive.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +40,7 @@ namespace LibraryArchive.API
                                      {
                                          AdditionalColumns = new Collection<SqlColumn>
                                          {
-                                        new SqlColumn("UserName", SqlDbType.NVarChar)
+                                    new SqlColumn("UserName", SqlDbType.NVarChar)
                                          }
                                      })
                 .Enrich.FromLogContext()
@@ -62,9 +62,21 @@ namespace LibraryArchive.API
             builder.Services.AddControllers()
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<OrderCreateDtoValidator>());
 
+            // Configure CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder =>
+                    {
+                        builder.WithOrigins("https://test.example.com")
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
+
             // Configure Swagger/OpenAPI
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c =>
+            builder.Services.AddSwaggerGen(c => 
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
@@ -124,7 +136,6 @@ namespace LibraryArchive.API
             .AddEntityFrameworkStores<LibraryArchiveContext>()
             .AddDefaultTokenProviders();
 
-
             // Configure JWT Authentication
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
@@ -156,6 +167,22 @@ namespace LibraryArchive.API
 
             var app = builder.Build();
 
+            // Create a scope to get services
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                // Ensure "User" role exists
+                if (!await roleManager.RoleExistsAsync("User"))
+                {
+                    var roleResult = await roleManager.CreateAsync(new IdentityRole("User"));
+                    if (!roleResult.Succeeded)
+                    {
+                        throw new Exception("Failed to create User role.");
+                    }
+                }
+            }
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -167,6 +194,8 @@ namespace LibraryArchive.API
 
             app.UseAuthentication();
 
+            app.UseCors("AllowSpecificOrigin");
+
             app.UseAuthorization();
 
             // Global exception handling middleware
@@ -175,7 +204,8 @@ namespace LibraryArchive.API
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
+
 }

@@ -30,7 +30,12 @@ namespace LibraryArchive.Services.Repositories
 
         public async Task<IEnumerable<ApplicationUser>> GetAllAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .Include(u => u.Books)
+                .Include(u => u.Notes)
+                .Include(u => u.Orders)
+                .Include(u => u.Addresses)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<ApplicationUser>> SearchUsersAsync(string searchTerm)
