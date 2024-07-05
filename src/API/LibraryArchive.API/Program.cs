@@ -28,24 +28,26 @@ namespace LibraryArchive.API
 
             // Configure Logging
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .WriteTo.File("logs/log.txt")
-                .WriteTo.MSSqlServer(builder.Configuration.GetConnectionString("LibraryArchiveConnection"),
-                                     sinkOptions: new Serilog.Sinks.MSSqlServer.MSSqlServerSinkOptions
-                                     {
-                                         TableName = "logs",
-                                         AutoCreateSqlTable = true
-                                     },
-                                     columnOptions: new ColumnOptions
-                                     {
-                                         AdditionalColumns = new Collection<SqlColumn>
-                                         {
-                                    new SqlColumn("UserName", SqlDbType.NVarChar)
-                                         }
-                                     })
-                .Enrich.FromLogContext()
-                .MinimumLevel.Information()
-                .CreateLogger();
+            .WriteTo.Console()
+            .WriteTo.File("logs/log.txt")
+            .WriteTo.MSSqlServer(
+                connectionString: builder.Configuration.GetConnectionString("LibraryArchiveConnection"),
+                sinkOptions: new Serilog.Sinks.MSSqlServer.MSSqlServerSinkOptions
+                {
+                    TableName = "logs",
+                    AutoCreateSqlTable = true
+                },
+                columnOptions: new ColumnOptions
+                {
+                    AdditionalColumns = new Collection<SqlColumn>
+                    {
+                        new SqlColumn("UserName", SqlDbType.NVarChar)
+                    }
+                })
+            .Enrich.FromLogContext()
+            .MinimumLevel.Information()
+            .CreateLogger();
+
 
             builder.Host.UseSerilog();
 
@@ -65,13 +67,12 @@ namespace LibraryArchive.API
             // Configure CORS
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowSpecificOrigin",
-                    builder =>
-                    {
-                        builder.WithOrigins("https://test.example.com")
-                               .AllowAnyMethod()
-                               .AllowAnyHeader();
-                    });
+                options.AddPolicy("OpenCorsPolicy", builder =>
+                {
+                    builder.AllowAnyOrigin()  
+                           .AllowAnyMethod()  
+                           .AllowAnyHeader(); 
+                });
             });
 
             // Configure Swagger/OpenAPI
@@ -194,7 +195,7 @@ namespace LibraryArchive.API
 
             app.UseAuthentication();
 
-            app.UseCors("AllowSpecificOrigin");
+            app.UseCors("OpenCorsPolicy");
 
             app.UseAuthorization();
 
