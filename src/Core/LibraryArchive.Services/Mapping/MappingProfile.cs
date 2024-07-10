@@ -27,6 +27,9 @@ namespace LibraryArchive.Services.Mapping
                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                 .ForMember(dest => dest.Orders, opt => opt.MapFrom(src => src.Orders))
                 .ForMember(dest => dest.Addresses, opt => opt.MapFrom(src => src.Addresses));
+            CreateMap<UserUpdateDto, ApplicationUser>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email));
+
 
             // Book Mappings
             CreateMap<Book, BookReadDto>()
